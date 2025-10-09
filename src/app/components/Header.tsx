@@ -7,7 +7,7 @@ import { useState, useEffect, MouseEvent } from "react";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [username, setUsername] = useState<string | null>(null); // ✅ Added missing state
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -45,7 +45,7 @@ export default function Header() {
 
   return (
     <header>
-      <div className="flex flex-row justify-between items-center p-4 md:px-10 md:shadow-sm">
+      <div className="bg-gray-200 flex flex-row justify-between items-center p-4 md:px-10 md:shadow-sm">
         <Image src="/logo.png" alt="logo" width={50} height={68} />
 
         {/* 🔹 Mobile buttons */}
