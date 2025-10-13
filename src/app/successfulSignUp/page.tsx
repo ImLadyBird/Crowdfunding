@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function SuccessfulSignUp() {
   return (
@@ -13,7 +14,7 @@ export default function SuccessfulSignUp() {
       </div>
       <div className="flex flex-row gap-4 justify-center items-center">
         <button className="bg-[#644FC1] text-white rounded-lg px-4 py-2 font-medium hover:bg-gray-400 cursor-pointer">Go Homepage</button>
-        <button className="bg-[#644FC1] text-white rounded-lg px-4 py-2 font-medium hover:bg-gray-400 cursor-pointer">Start Project</button>
+        <button className="bg-[#644FC1] text-white rounded-lg px-4 py-2 font-medium hover:bg-gray-400 cursor-pointer"><Link href="/WizardForm">Start Project</Link></button>
       </div>
     </div>
   );

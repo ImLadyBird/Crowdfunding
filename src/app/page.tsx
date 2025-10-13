@@ -10,28 +10,30 @@ export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   // ✅ Check if user is logged in using Supabase Auth
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error checking user:", error.message);
-        setIsAuthenticated(false);
-      } else {
-        setIsAuthenticated(!!data.user);
-      }
-    };
+useEffect(() => {
+  const checkUser = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    checkUser();
+    if (session) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  };
 
-    // ✅ Listen for login/logout events (real-time updates)
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session?.user);
-    });
+  checkUser();
 
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    setIsAuthenticated(!!session?.user);
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
+
 
   const handleStart = () => {
     if (isAuthenticated) {
