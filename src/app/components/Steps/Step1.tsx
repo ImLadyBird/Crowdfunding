@@ -13,10 +13,10 @@ export default function Step1() {
   }
 
   return (
-    <div className="flex flex-col gap-4 justify-center p-9 items-center">
+    <div className="flex flex-col gap-4 justify-center px-9 items-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 p-5"
+        className="flex flex-col gap-4 px-5"
       >
         <h1 className="text-3xl self-start text-[#644FC1] mt-10">Basic Info</h1>
         <h2 className="font-bold self-start text-gray-700 mt-2">

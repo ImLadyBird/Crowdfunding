@@ -27,13 +27,14 @@ export function AuthForm() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data , error } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { username } },
       });
       if (error) throw error;
 
+  
       toast.success(
         "Account created successfully! Check your email to verify."
       );
