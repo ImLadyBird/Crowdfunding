@@ -3,18 +3,19 @@
 import { useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { WizardContext } from "../../WizardForm/page";
-import { supabase } from "@/lib/supabaseClient"; // ✅ import your supabase client
+import { supabase } from "@/lib/supabaseClient";
+import { toast } from "react-toastify";
+import SocialLinksInput from "../SocialLinksInput";
 
-function Step2() {
-  const { nextStep } = useContext(WizardContext);
-  const { register, handleSubmit, getValues, reset } = useFormContext();
+export default function Step2() {
+  const wizard = useContext(WizardContext);
+  const { register, handleSubmit, getValues, reset, setValue, watch } = useFormContext();
 
-  // 👇 this runs when user submits the final step
+  // 👇 Watch socials so we can pass its value to SocialLinksInput
+  const socials = watch("socials") || [];
+
   async function submitForm() {
-    // get *all* form data from both steps
     const data = getValues();
-
-    // get current user from Supabase auth
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -24,37 +25,38 @@ function Step2() {
       return;
     }
 
-    // prepare data to insert into Supabase table
     const formData = {
       id: user.id,
       brand: data.brand,
       country: data.country,
       category: data.category,
       subcategory: data.subcategory,
-      tags: data.Tags,
+      tags: data.tags,
       details: data.details,
-      socials: data.socilals, // (you spelled it "socilals" in your code)
+      socials: data.socials, // ✅ fixed typo
     };
+  
+
 
     const { error } = await supabase.from("Info").insert([formData]);
-    // ⬆️ Replace "organizations" with your actual table name
 
     if (error) {
       console.error("Error saving form data:", error);
-      alert("Error saving your information. Check console for details.");
+      toast.error("Error saving your information. Check console for details.");
     } else {
-      alert("Data submitted successfully!");
-      reset(); // optional - clears form
-      nextStep?.(); // move to next wizard step, if you have one
+      toast.success("Data submitted successfully!");
+      reset();
+      wizard?.nextStep?.();
     }
   }
 
   return (
     <div className="flex flex-col gap-4 justify-center px-9 items-center">
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={handleSubmit(submitForm)} className="w-full max-w-2xl">
         <h1 className="text-3xl self-start text-[#644FC1] mt-10">
           Detailed Info
         </h1>
+
         <h2 className="font-bold self-start text-gray-700 mt-2">
           What is the primary mission or objective of your organization?
         </h2>
@@ -62,13 +64,15 @@ function Step2() {
           Be specific and provide a detailed description of your organization.
         </span>
 
-        <div className="py-9">
+        <div className="py-6">
           <textarea
+            placeholder="Write the details..."
             {...register("details")}
-            className="border-1 border-[#644FC1] rounded-[5px] w-full h-[200px]"
+            className="border border-[#644FC1] rounded-[5px] w-full h-[200px] p-3 outline-none focus:ring-2"
           />
         </div>
 
+        {/* Social Links */}
         <div className="flex flex-col gap-2">
           <h2 className="font-bold self-start text-gray-700 mt-2">
             Help your contributors find you faster
@@ -76,10 +80,11 @@ function Step2() {
           <span className="font-light text-neutral-600 text-sm">
             Connect your socials so contributors get to know you better.
           </span>
-          <input
-            {...register("socilals")}
-            type="text"
-            className="border-1 border-[#644FC1] rounded-[5px] w-full"
+
+         
+          <SocialLinksInput
+            value={socials}
+            onChange={(links) => setValue("socials", links)}
           />
         </div>
 
@@ -95,5 +100,3 @@ function Step2() {
     </div>
   );
 }
-
-export default Step2;

@@ -2,10 +2,10 @@ import Image from "next/image";
 
 export default function Step3() {
     return(
-        <div className="flex flex-col gap-9 justify-center items-center">
+        <div className="flex flex-col gap-9 justify-center p-4 items-center">
             <h1 className="text-3xl text-[#644FC1] mt-10">Congratulation!!</h1>
             <Image src="/ele.svg" alt="logo" width={507.7} height={324} priority />
-            <div className="flex flex-col gap-4 justify-center items-center">
+            <div className="flex flex-col gap-4 justify-center items-center text-center">
                 <h2 className="font-bold  text-gray-700 mt-2">
                 Your Creative starter has been approved by our experts!
             </h2>

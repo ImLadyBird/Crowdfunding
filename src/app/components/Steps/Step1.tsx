@@ -3,13 +3,21 @@
 import { useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { WizardContext } from "../../WizardForm/page";
+import TagInput from "../TagInput";
 
 export default function Step1() {
-  const { nextStep } = useContext(WizardContext);
-  const { register, handleSubmit } = useFormContext();
+  const wizard = useContext(WizardContext);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+  const watchedTags = watch("tags") || [];
 
- function onSubmit() {
-    nextStep();
+  function onSubmit() {
+    wizard?.nextStep?.();
   }
 
   return (
@@ -31,10 +39,12 @@ export default function Step1() {
               Brand / Organization Name
             </label>
             <input
-              {...register("brand")}
+              {...register("brand", { required: "This field is required" })}
               type="text"
               className="border-1 border-[#644FC1] rounded-[5px]"
             />
+            {errors.details && <p className="text-red-500 text-sm">{errors.details.message}</p>}
+
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor="country" className="text-sm font-extralight">
@@ -74,12 +84,25 @@ export default function Step1() {
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="tag">Brand Tags</label>
-          <input
-            {...register("Tags")}
-            type="text"
-            className="border-1 border-[#644FC1] rounded-[5px]"
+          <label htmlFor="tag" className="text-sm font-extralight">
+            Brand Tags
+          </label>
+          <TagInput
+            suggestions={[
+              "UI",
+              "Web",
+              "Software",
+              "Web design",
+              "UI design",
+              "Software",
+              "Product design",
+            ]}
+            placeholder="Type or Select..."
+            onChange={(newTags) => setValue("tags", newTags)}
           />
+          <p className="text-sm text-gray-500">
+            Current Tags: {watchedTags.join(", ")}
+          </p>
         </div>
         <label className="text-sm font-extralight flex items-center">
           <input type="checkbox" {...register("acceptTerms")} />

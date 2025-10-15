@@ -59,7 +59,7 @@ useEffect(() => {
         dolorem similique deleniti.
       </p>
 
-      <div className="flex flex-col items-center justify-center gap-5 border border-[#644FC1] rounded-2xl mt-2 py-9 px-3">
+      <div className="flex flex-col items-center justify-center gap-5  border-[1.5px] border-[#644FC1] rounded-2xl mt-2 py-9 px-3">
         <Image src="/bag.png" alt="bag" width={60} height={60} />
 
         <h2 className="text-xl font-bold text-center text-[#644FC1] mt-5">
