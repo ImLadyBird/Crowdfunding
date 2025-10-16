@@ -26,7 +26,7 @@ export default function Step2() {
     }
 
     const formData = {
-      id: user.id,
+      user_id: user.id, 
       brand: data.brand,
       country: data.country,
       category: data.category,

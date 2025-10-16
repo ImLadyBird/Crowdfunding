@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Step3() {
     return(
@@ -13,7 +14,7 @@ export default function Step3() {
                 Welcome abroad! Lets dive in and get started.
             </span>
             <button className="bg-[#644FC1] text-white rounded-[5px] px-4 py-2 font-light text-sm hover:bg-gray-400 cursor-pointer">
-                Go to my profile
+                <Link href="/Profile">Go to my profile</Link>
             </button>
             </div>
         </div>
