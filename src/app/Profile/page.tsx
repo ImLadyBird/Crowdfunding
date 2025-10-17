@@ -54,25 +54,5 @@ export default function Profile() {
   return (
     <div>
       <ProfileHeader/>
-      <div className="flex flex-col gap-4 p-4"> 
-        {infoList.map((info) => (
-          <div key={info.id} className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <div className="w-1/2 flex flex-col gap-4">
-                <div className="text-xl font-bold">{info.brand}</div>
-                <div className="text-sm">{info.country}</div>
-                <div className="text-sm">{info.category}</div>
-                <div className="text-sm">{info.subcategory}</div>
-              </div>
-              <div className="w-1/2 flex flex-col gap-4">
-                <div className="text-xl font-bold">{info.tags}</div>
-                <div className="text-sm">{info.details}</div>
-                <div className="text-sm">{info.socials}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
-  );
-}
+  )}
