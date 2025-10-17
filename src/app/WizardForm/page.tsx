@@ -22,7 +22,7 @@ function WizardForm() {
 
   const { ...props } = useForm({});
 
-  const steps: { [key: number]: JSX.Element } = {
+  const steps: { [key: number]: React.ReactNode } = {
     0: <Step1 />,
     1: <Step2 />,
     2: <Step3 />,

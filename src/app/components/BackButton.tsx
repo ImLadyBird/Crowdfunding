@@ -2,7 +2,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
 }
 
-function BackButton({button , text, ...props }: ButtonProps) {
+function BackButton({ text, ...props }: ButtonProps) {
   return (
     <button
       {...props}
