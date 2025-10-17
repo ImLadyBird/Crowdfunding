@@ -43,7 +43,7 @@ export default function Step1() {
               type="text"
               className="border-1 border-[#644FC1] rounded-[5px]"
             />
-            {errors.details && <p className="text-red-500 text-sm">{errors.details.message}</p>}
+            {errors.details && <p className="text-red-500 text-sm">{String(errors.details.message)}</p>}
 
           </div>
           <div className="flex flex-col gap-1">
