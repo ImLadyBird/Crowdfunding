@@ -44,12 +44,12 @@ export default function Header() {
   };
 
   return (
-    <header>
+    <header className="relative">
       <div className="bg-gray-200 flex flex-row justify-between items-center p-4 md:px-10 md:shadow-sm">
         <Image src="/logo.png" alt="logo" width={50} height={68} />
 
         {/* 🔹 Mobile buttons */}
-        <div className="flex flex-row gap-4 lg:hidden md:hidden">
+        <div className="flex flex-row gap-4 md:hidden">
           <button aria-label="Search">
             <Image src="/search-p.svg" alt="search" width={20} height={20} />
           </button>
@@ -104,7 +104,7 @@ export default function Header() {
 
       {/* 🔹 Mobile dropdown menu */}
       {isOpen && (
-        <div className="absolute right-4 top-14 w-40 bg-white shadow-lg rounded-lg flex flex-col text-gray-700">
+        <div className="absolute z-50 right-4 top-14 w-40 bg-white shadow-lg rounded-lg flex flex-col text-gray-700">
           {[
             { href: "/", label: "Home", rounded: "rounded-t-lg" },
             { href: "/explore", label: "Explore" },
