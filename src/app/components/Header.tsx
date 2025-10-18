@@ -58,7 +58,7 @@ export default function Header() {
             aria-label="Toggle menu"
             className="cursor-pointer"
           >
-            <Image src="/ham.svg" alt="ham" width={24} height={16} />
+            <Image src="/Ham.svg" alt="ham" width={24} height={16} />
           </button>
         </div>
 
