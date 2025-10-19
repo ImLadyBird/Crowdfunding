@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 interface SignUpFormData {
-  username: string;
+  username?: string;
   email: string;
   password: string;
 }
