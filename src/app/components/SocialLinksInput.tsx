@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Plus, X } from "lucide-react";
+
+export interface SocialLink {
+  platform: string;
+  url: string;
+}
 
 type SocialOption = {
   label: string;
@@ -19,11 +23,6 @@ const SOCIAL_OPTIONS: SocialOption[] = [
   { label: "Linkedin" },
 ];
 
-interface SocialLink {
-  platform: string;
-  url: string;
-}
-
 interface SocialLinksInputProps {
   value?: SocialLink[];
   onChange?: (links: SocialLink[]) => void;
@@ -33,29 +32,25 @@ export default function SocialLinksInput({
   value = [],
   onChange,
 }: SocialLinksInputProps) {
-  const [links, setLinks] = useState<SocialLink[]>(value);
-
-  useEffect(() => {
-    onChange?.(links);
-  }, [links]);
+  const links = value;
 
   const handleAddLink = () => {
-    setLinks([...links, { platform: "", url: "" }]);
+    onChange?.([...links, { platform: "", url: "" }]);
   };
 
   const handleRemoveLink = (index: number) => {
     const updated = links.filter((_, i) => i !== index);
-    setLinks(updated);
+    onChange?.(updated);
   };
 
   const handleChange = (
     index: number,
     field: keyof SocialLink,
-    value: string
+    newValue: string
   ) => {
     const updated = [...links];
-    updated[index][field] = value;
-    setLinks(updated);
+    updated[index][field] = newValue;
+    onChange?.(updated);
   };
 
   return (

@@ -46,11 +46,11 @@ function WizardForm() {
             hidden={step === 0 || step === 2 || step === 1}
             onClick={prevStep}
           />
-          <Button
+          {/* <Button
             text="Continue"
             hidden={step === 2 || step === 1}
             onClick={nextStep}
-          />
+          /> */}
         </div>
       </div>
     </WizardContext.Provider>

@@ -89,24 +89,24 @@ export default function Profile() {
             </div>
 
             <div className="flex items-center justify-between gap-1 py-2">
-             <div className="flex gap-2">
-               <button className=" hover:bg-gray-100 rounded-full transition-colors">
-                <Globe className="w-5 h-5 text-gray-500" />
-              </button>
-              <button className=" hover:bg-gray-100 rounded-full transition-colors">
-                <MessageCircle className="w-5 h-5 text-gray-500" />
-              </button>
-              <button className=" hover:bg-gray-100 rounded-full transition-colors">
-                <Instagram className="w-5 h-5 text-gray-500" />
-              </button>
-             </div>
+              <div className="flex gap-2">
+                <button className=" hover:bg-gray-100 rounded-full transition-colors">
+                  <Globe className="w-5 h-5 text-gray-500" />
+                </button>
+                <button className=" hover:bg-gray-100 rounded-full transition-colors">
+                  <MessageCircle className="w-5 h-5 text-gray-500" />
+                </button>
+                <button className=" hover:bg-gray-100 rounded-full transition-colors">
+                  <Instagram className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
               <div className="flex gap-2">
                 <button className="p-2 bg-violet-800  rounded-full transition-colors shadow-lg ml-2">
-                <Edit3 className="w-5 h-5 text-white" />
-              </button>
-              <button className="p-2 bg-violet-800  rounded-full transition-colors shadow-lg">
-                <Settings className="w-5 h-5 text-white" />
-              </button> 
+                  <Edit3 className="w-5 h-5 text-white" />
+                </button>
+                <button className="p-2 bg-violet-800  rounded-full transition-colors shadow-lg">
+                  <Settings className="w-5 h-5 text-white" />
+                </button>
               </div>
             </div>
           </div>

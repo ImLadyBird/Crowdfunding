@@ -7,16 +7,31 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import InputField from "../components/InputField";
 import Image from "next/image";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 interface SignUpFormData {
   username: string;
   email: string;
   password: string;
 }
+const forSchema = z.object({
+  username: z.string().optional(),
+  email: z.email({ message: "Email is not valid" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" })
+    .max(20, { message: "Password must be at most 20 characters" }),
+});
 
 export default function SignIn() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, reset } = useForm<SignUpFormData>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<SignUpFormData>({ resolver: zodResolver(forSchema) });
   const router = useRouter();
 
   const onSubmit: SubmitHandler<SignUpFormData> = async ({
@@ -66,6 +81,7 @@ export default function SignIn() {
           aria-label="Email"
           {...register("email", { required: "Email is required" })}
         />
+        <span className="text-red-600 text-sm">{errors?.email?.message}</span>
         <InputField
           type="password"
           placeholder="Password"
@@ -78,7 +94,9 @@ export default function SignIn() {
             },
           })}
         />
-
+        <span className="text-red-600 text-sm">
+          {errors?.password?.message}
+        </span>
         <button
           type="submit"
           disabled={isSubmitting}

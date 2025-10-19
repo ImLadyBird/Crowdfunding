@@ -7,6 +7,9 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import InputField from "../InputField";
 import Image from "next/image";
+import {z} from "zod"; 
+import { zodResolver } from "@hookform/resolvers/zod"; 
+
 
 interface SignUpFormData {
   username: string;
@@ -14,9 +17,21 @@ interface SignUpFormData {
   password: string;
 }
 
+const forSchema = z.object({
+  username: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters" })
+    .max(20, { message: "Username must be at most 20 characters" }),
+  email: z.email({ message: "Email is not valid" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" })
+    .max(20, { message: "Password must be at most 20 characters" }),
+})
+
 export function AuthForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, reset } = useForm<SignUpFormData>();
+  const { register, handleSubmit, reset ,formState:{errors}} = useForm<SignUpFormData>({resolver:zodResolver(forSchema)});
   const router = useRouter();
 
   const onSubmit: SubmitHandler<SignUpFormData> = async ({
@@ -71,12 +86,14 @@ export function AuthForm() {
           aria-label="Username"
           {...register("username", { required: "Username is required" })}
         />
+        <span className="text-red-600 text-sm">{errors?.username?.message}</span>
         <InputField
           type="email"
           placeholder="Email"
           aria-label="Email"
           {...register("email", { required: "Email is required" })}
         />
+        <span className="text-red-600 text-sm">{errors?.email?.message}</span>
         <InputField
           type="password"
           placeholder="Password"
@@ -89,6 +106,7 @@ export function AuthForm() {
             },
           })}
         />
+        <span className="text-red-600 text-sm">{errors?.password?.message}</span>
 
         <button
           type="submit"

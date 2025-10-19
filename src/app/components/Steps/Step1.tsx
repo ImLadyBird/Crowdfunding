@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { WizardContext } from "../../WizardForm/page";
 import TagInput from "../TagInput";
+import Button from "../../components/Button";
 
 export default function Step1() {
   const wizard = useContext(WizardContext);
@@ -14,6 +15,7 @@ export default function Step1() {
     watch,
     formState: { errors },
   } = useFormContext();
+
   const watchedTags = watch("tags") || [];
 
   function onSubmit() {
@@ -43,18 +45,26 @@ export default function Step1() {
               type="text"
               className="border-1 border-[#644FC1] rounded-[5px]"
             />
-            {errors.details && <p className="text-red-500 text-sm">{String(errors.details.message)}</p>}
-
+            {errors.brand && (
+              <p className="text-red-500 text-sm">
+                {errors.brand.message as string}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor="country" className="text-sm font-extralight">
               Country
             </label>
             <input
-              {...register("country")}
+              {...register("country", { required: "This field is required" })}
               type="text"
               className="border-1 border-[#644FC1] rounded-[5px]"
             />
+            {errors.country && (
+              <p className="text-red-500 text-sm">
+                {errors.country.message as string}
+              </p>
+            )}
           </div>
         </div>
         <span className="font-light text-neutral-600 text-sm max-w-[500px]">
@@ -67,20 +77,32 @@ export default function Step1() {
               Category
             </label>
             <input
-              {...register("category")}
+              {...register("category", { required: "This field is required" })}
               type="text"
               className="border-1 border-[#644FC1] rounded-[5px]"
             />
+            {errors.category && (
+              <p className="text-red-500 text-sm">
+                {errors.category.message as string}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor="country" className="text-sm font-extralight">
               Subcategory
             </label>
             <input
-              {...register("subcategory")}
+              {...register("subcategory", {
+                required: "This field is required",
+              })}
               type="text"
               className="border-1 border-[#644FC1] rounded-[5px]"
             />
+            {errors.category && (
+              <p className="text-red-500 text-sm">
+                {errors.category.message as string}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-1">
@@ -105,9 +127,26 @@ export default function Step1() {
           </p>
         </div>
         <label className="text-sm font-extralight flex items-center">
-          <input type="checkbox" {...register("acceptTerms")} />
+          <input
+            type="checkbox"
+            {...register("acceptTerms", {
+              required: "You must accept the terms of service",
+            })}
+          />
           <span className="ml-2">I agree to the terms of services of 3F.</span>
         </label>
+        {errors.acceptTerms && (
+          <p className="text-red-500 text-sm">
+            {errors.acceptTerms.message as string}
+          </p>
+        )}
+        <div className="flex flex-row gap-4 justify-center p-9 items-center">
+          <Button
+            type="submit"
+            text="Continue"
+            className="bg-[#644FC1] text-white rounded-lg px-4 py-2 font-medium hover:bg-gray-400 cursor-pointer"
+          />
+        </div>
       </form>
     </div>
   );

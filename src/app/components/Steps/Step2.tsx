@@ -1,18 +1,51 @@
 "use client";
 
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { WizardContext } from "../../WizardForm/page";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "react-toastify";
-import SocialLinksInput from "../SocialLinksInput";
+import SocialLinksInput, { SocialLink } from "../SocialLinksInput";
 
 export default function Step2() {
   const wizard = useContext(WizardContext);
-  const { register, handleSubmit, getValues, reset, setValue, watch } = useFormContext();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
 
-  // 👇 Watch socials so we can pass its value to SocialLinksInput
   const socials = watch("socials") || [];
+
+useEffect(() => {
+  register("socials", {
+    required: "At least one social link is required",
+    validate: (links: SocialLink[] = []) => {
+      if (links.length === 0) return "At least one social link is required";
+      const invalid = links.some(
+        (link) =>
+          !link.platform ||
+          !link.url ||
+          !/^https?:\/\//i.test(link.url) ||
+          (() => {
+            try {
+              new URL(link.url);
+              return false;
+            } catch {
+              return true;
+            }
+          })()
+      );
+      return invalid
+        ? "All links must have a platform and a valid URL"
+        : true;
+    },
+  });
+}, [register]);
 
   async function submitForm() {
     const data = getValues();
@@ -26,17 +59,15 @@ export default function Step2() {
     }
 
     const formData = {
-      user_id: user.id, 
+      user_id: user.id,
       brand: data.brand,
       country: data.country,
       category: data.category,
       subcategory: data.subcategory,
       tags: data.tags,
       details: data.details,
-      socials: data.socials, // ✅ fixed typo
+      socials: data.socials,
     };
-  
-
 
     const { error } = await supabase.from("Info").insert([formData]);
 
@@ -67,9 +98,14 @@ export default function Step2() {
         <div className="py-6">
           <textarea
             placeholder="Write the details..."
-            {...register("details")}
+            {...register("details", { required: "Details are required" })}
             className="border border-[#644FC1] rounded-[5px] w-full h-[200px] p-3 outline-none focus:ring-2"
           />
+          {errors.details && (
+            <p className="text-red-500 text-sm">
+              {errors.details.message as string}
+            </p>
+          )}
         </div>
 
         {/* Social Links */}
@@ -81,11 +117,17 @@ export default function Step2() {
             Connect your socials so contributors get to know you better.
           </span>
 
-         
           <SocialLinksInput
             value={socials}
-            onChange={(links) => setValue("socials", links)}
+            onChange={(links) =>
+              setValue("socials", links, { shouldValidate: true })
+            }
           />
+          {errors.socials && (
+            <p className="text-red-500 text-sm">
+              {errors.socials.message as string}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-row gap-4 justify-center p-9 items-center">
