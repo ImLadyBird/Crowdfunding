@@ -10,13 +10,11 @@ import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-interface SignUpFormData {
-  username?: string;
+interface SignInFormData {
   email: string;
   password: string;
 }
 const forSchema = z.object({
-  username: z.string().optional(),
   email: z.email({ message: "Email is not valid" }),
   password: z
     .string()
@@ -31,10 +29,10 @@ export default function SignIn() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<SignUpFormData>({ resolver: zodResolver(forSchema) });
+  } = useForm<SignInFormData>({ resolver: zodResolver(forSchema) });
   const router = useRouter();
 
-  const onSubmit: SubmitHandler<SignUpFormData> = async ({
+  const onSubmit: SubmitHandler<SignInFormData> = async ({
     email,
     password,
   }) => {
