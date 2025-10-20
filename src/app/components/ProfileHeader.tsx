@@ -1,16 +1,32 @@
 import React from "react";
 import { Globe, Settings, Edit3, Instagram, MessageCircle } from "lucide-react";
 
-export default function Profile() {
+type Info = {
+  id: string;
+  brand: string;
+  country: string;
+  category: string;
+  subcategory: string;
+  tags: string;
+  details: string;
+  socials: string;
+  user_id: string;
+};
+
+type ProfileHeaderProps = {
+  infoList: Info[];
+};
+
+export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className=" bg-white">
       <div className="p-5 mx-auto">
         <div
           className="relative bg-gradient-to-br from-slate-400 via-slate-500 to-slate-400 rounded-3xl md:rounded-3xl"
           style={{ height: "240px" }}
         >
           <h1 className="absolute top-20 left-3 md:top-12 md:left-12 text-white text-3xl md:text-5xl font-bold">
-            Brand or Organization
+            {infoList[0]?.brand}
           </h1>
 
           <button className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2 bg-violet-200 px-4 py-2 rounded-[7px] border-1 border-violet-900 transition-colors shadow-sm">

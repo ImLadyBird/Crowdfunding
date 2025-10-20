@@ -5,6 +5,8 @@ export default function Explore() {
     <div>
       <h1>Explore</h1>
       <Link href="/WizardForm">Wizard Form</Link>
+      <Link href="/Profile">profile</Link>
+      
     </div>
   );
 }

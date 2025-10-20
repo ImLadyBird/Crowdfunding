@@ -4,7 +4,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ProfileHeader from "../components/ProfileHeader";
-
+import ProfileGuideBar from "../components/ProfileGuideBar";
+import ProfileContributorTier from "../components/ProfileContributorTier";
 
 type Info = {
   id: string;
@@ -21,6 +22,10 @@ type Info = {
 export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [infoList, setInfoList] = useState<Info[]>([]);
+
+  useEffect(() => {
+    console.log("infoList updated:", infoList);
+  }, [infoList]);
 
   useEffect(() => {
     async function checkUser() {
@@ -41,6 +46,7 @@ export default function Profile() {
       if (error) console.error(error);
       else {
         setInfoList(data || []);
+
         console.log("Fetched data:", data);
       }
 
@@ -53,6 +59,9 @@ export default function Profile() {
 
   return (
     <div>
-      <ProfileHeader/>
+      <ProfileHeader infoList={infoList} />
+      <ProfileGuideBar/>
+      <ProfileContributorTier/>
     </div>
-  )}
+  );
+}
