@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import ProfileHeader from "../components/ProfileHeader";
 import ProfileGuideBar from "../components/ProfileGuideBar";
 import ProfileContributorTier from "../components/ProfileContributorTier";
+import ProfileAboutSection from "../components/ProfileAboutSection";
+import ProfileTeamSection from "../components/ProfileTeamSection";
 
 type Info = {
   id: string;
@@ -62,6 +64,8 @@ export default function Profile() {
       <ProfileHeader infoList={infoList} />
       <ProfileGuideBar/>
       <ProfileContributorTier/>
+      <ProfileAboutSection/>
+      <ProfileTeamSection/>
     </div>
   );
 }

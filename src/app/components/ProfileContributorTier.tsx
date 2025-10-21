@@ -191,8 +191,10 @@ export default function ProfileContributorTier() {
 
   return (
     <div className="p-6 md:px-40 bg-white">
-      <h2 className="text-2xl mb-4">Contribution Tiers</h2>
-      <h3 className="mb-5">Recurring or One-time</h3>
+      <div className="flex items-center gap-2 py-6">
+            <span className="h-3 w-3 rounded-full bg-violet-800" />
+            <h2 className="text-xl font-semibold text-gray-800">Contributor Tiers</h2>
+          </div>
 
       {state.loading ? (
         <p>Loading...</p>
