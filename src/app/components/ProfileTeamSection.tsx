@@ -170,7 +170,7 @@ export default function TeamManager() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {state.members.map((m) => (
-            <div key={m.id} className="flex flex-col relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden">
+            <div key={m.id} className="flex flex-col max-w-[250px] relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden">
                  <button
                   onClick={() => dispatch({ type: "OPEN_EDIT_MODAL", payload: m })}
                   className="absolute top-2 right-2 cursor-pointer hover:bg-gray-200 p-1 text-white rounded-md text-sm"
@@ -186,7 +186,7 @@ export default function TeamManager() {
             </div>
           ))}
 
-          <div className="border border-gray-400 flex items-center justify-center">
+          <div className="border border-gray-400 flex items-center max-w-[250px] justify-center">
             <button
               onClick={() => dispatch({ type: "OPEN_CREATE_MODAL" })}
               className="flex flex-col items-center justify-center py-8 px-4 w-full h-40 cursor-pointer hover:bg-gray-50 transition"

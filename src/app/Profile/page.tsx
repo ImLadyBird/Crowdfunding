@@ -8,6 +8,8 @@ import ProfileGuideBar from "../components/ProfileGuideBar";
 import ProfileContributorTier from "../components/ProfileContributorTier";
 import ProfileAboutSection from "../components/ProfileAboutSection";
 import ProfileTeamSection from "../components/ProfileTeamSection";
+import ProfileTopSection from "../components/ProfileTopSection";
+import ProfileFAQSection from "../components/ProfileFAQSection";
 
 type Info = {
   id: string;
@@ -66,6 +68,8 @@ export default function Profile() {
       <ProfileContributorTier/>
       <ProfileAboutSection/>
       <ProfileTeamSection/>
+      <ProfileTopSection/>
+      <ProfileFAQSection/>
     </div>
   );
 }
