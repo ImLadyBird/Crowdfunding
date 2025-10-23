@@ -52,7 +52,13 @@ function reducer(state: State, action: Action): State {
     case "SET_LOADING":
       return { ...state, loading: action.payload };
     case "OPEN_CREATE_MODAL":
-      return { ...state, isOpen: true, editingFAQ: null, question: "", answer: "" };
+      return {
+        ...state,
+        isOpen: true,
+        editingFAQ: null,
+        question: "",
+        answer: "",
+      };
     case "OPEN_EDIT_MODAL":
       return {
         ...state,
@@ -203,7 +209,9 @@ export default function ProfileFAQSection() {
                 <p className="mt-2 text-sm text-gray-600">{faq.answer}</p>
               </details>
               <button
-                onClick={() => dispatch({ type: "OPEN_EDIT_MODAL", payload: faq })}
+                onClick={() =>
+                  dispatch({ type: "OPEN_EDIT_MODAL", payload: faq })
+                }
                 className="p-2 rounded-2xl hover:bg-violet-50 cursor-pointer"
               >
                 <Image src="/edit.png" alt="edit" width={40} height={30} />

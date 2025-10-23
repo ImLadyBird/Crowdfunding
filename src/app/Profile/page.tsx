@@ -10,6 +10,7 @@ import ProfileAboutSection from "../components/ProfileAboutSection";
 import ProfileTeamSection from "../components/ProfileTeamSection";
 import ProfileTopSection from "../components/ProfileTopSection";
 import ProfileFAQSection from "../components/ProfileFAQSection";
+import ProfileUpdateSection from "../components/ProfileUpdateSection";
 
 type Info = {
   id: string;
@@ -62,7 +63,7 @@ export default function Profile() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
+    <div className="bg-white">
       <ProfileHeader infoList={infoList} />
       <ProfileGuideBar/>
       <ProfileContributorTier/>
@@ -70,6 +71,7 @@ export default function Profile() {
       <ProfileTeamSection/>
       <ProfileTopSection/>
       <ProfileFAQSection/>
+      <ProfileUpdateSection/>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { Globe, Twitter, Github, Linkedin, Mail, MessageCircle } from "lucide-re
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-200 text-gray-700 border-t border-gray-300 mt-10 md:shadow-stone-500">
+    <footer className="bg-gray-200 text-gray-700  mt-10 md:shadow-stone-500">
       <div className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
         <div>
           <h3 className="text-sm font-semibold mb-3">ABOUT</h3>
@@ -63,7 +63,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-300">
+      <div>
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center px-6 py-4 text-sm text-gray-500">
           {/* Language Selector */}
           <div className="flex items-center space-x-1">
