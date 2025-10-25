@@ -29,10 +29,6 @@ export default function Profile() {
   const [infoList, setInfoList] = useState<Info[]>([]);
 
   useEffect(() => {
-    console.log("infoList updated:", infoList);
-  }, [infoList]);
-
-  useEffect(() => {
     async function checkUser() {
       const { data: userData } = await supabase.auth.getUser();
       const user = userData?.user;
@@ -51,10 +47,7 @@ export default function Profile() {
       if (error) console.error(error);
       else {
         setInfoList(data || []);
-
-        console.log("Fetched data:", data);
       }
-
       setLoading(false);
     }
     checkUser();
@@ -65,13 +58,13 @@ export default function Profile() {
   return (
     <div className="bg-white">
       <ProfileHeader infoList={infoList} />
-      <ProfileGuideBar/>
-      <ProfileContributorTier/>
-      <ProfileAboutSection/>
-      <ProfileTeamSection/>
-      <ProfileTopSection/>
-      <ProfileFAQSection/>
-      <ProfileUpdateSection/>
+      <ProfileGuideBar />
+      <ProfileContributorTier />
+      <ProfileAboutSection />
+      <ProfileTeamSection />
+      <ProfileTopSection />
+      <ProfileFAQSection />
+      <ProfileUpdateSection />
     </div>
   );
 }

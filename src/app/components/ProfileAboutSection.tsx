@@ -32,7 +32,7 @@ export default function ProfileAboutSection() {
           .from("profileAbout")
           .select("about")
           .eq("user_id", user.id)
-          .single();
+          .maybeSingle();
 
         if (error && error.code !== "PGRST116") {
           setErrorMsg(error.message);
