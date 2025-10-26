@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useState } from "react";
 import { Edit3, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
@@ -13,6 +14,7 @@ type Info = {
   details: string;
   socials: string;
   user_id: string;
+  cover_image_url?: string;
 };
 
 type ProfileHeaderProps = {
@@ -21,16 +23,11 @@ type ProfileHeaderProps = {
 
 export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>(
+    infoList[0]?.cover_image_url || null
+  );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data?.user?.id ?? null);
-    });
-  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,44 +41,45 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
 
   const handleSave = async () => {
     if (!selectedImage) return;
-
     setIsSaving(true);
 
     try {
-      const fileExt = selectedImage.name.split(".").pop();
-      const fileName = `${userId}/cover.${fileExt}`;
-      const filePath = `covers/${fileName}`;
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) throw new Error("User not logged in");
 
-      // Upload image to Supabase Storage
+      const fileExt = selectedImage.name.split(".").pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
       const { error: uploadError } = await supabase.storage
-        .from("user-covers") // replace with your bucket name
+        .from("cover-images")
         .upload(filePath, selectedImage, {
-          cacheControl: "3600",
           upsert: true,
+          contentType: selectedImage.type,
         });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("user-covers").getPublicUrl(filePath);
+      const { data } = supabase.storage
+        .from("cover-images")
+        .getPublicUrl(filePath);
 
-      // Save URL to user_profiles table
-      const { error: dbError } = await supabase.from("user_profiles").upsert(
-        {
-          user_id: userId,
-          cover_url: publicUrl,
-        },
-        { onConflict: "user_id" } // ✅ single string
-      );
+      const publicUrl = data.publicUrl;
+
+      const { error: dbError } = await supabase
+        .from("Info")
+        .update({ cover_image_url: publicUrl })
+        .eq("user_id", user.id);
 
       if (dbError) throw dbError;
 
-      alert("Cover image saved successfully!");
+      setCoverImage(publicUrl);
+      setSelectedImage(null);
       setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error uploading image:", error);
+      alert("Cover image saved successfully!");
+    } catch (err) {
+      console.error("Error uploading/saving image:", err);
+      alert("Failed to save cover image — see console.");
     } finally {
       setIsSaving(false);
     }
@@ -95,7 +93,6 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
   return (
     <div className="bg-white">
       <div className="p-5 mx-auto">
-        {/* COVER */}
         <div
           className="relative bg-gradient-to-br from-slate-400 via-slate-500 to-slate-400 rounded-3xl"
           style={{
@@ -126,7 +123,6 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
           </div>
         </div>
 
-        {/* Other layout content */}
         <div className="px-4 md:px-8 pb-8">
           <div className="mt-4">
             <h2 className="text-3xl font-bold text-gray-900">Wish Work</h2>
@@ -134,7 +130,6 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
         </div>
       </div>
 
-      {/* --- MODAL --- */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white w-[90%] md:w-[600px] rounded-2xl p-6 relative shadow-lg">
