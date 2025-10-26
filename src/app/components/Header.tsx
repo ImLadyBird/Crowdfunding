@@ -210,19 +210,19 @@ export default function Header() {
             </div>
           </div>
           <div className="flex flex-col gap-4 px-3 mt-[-20px] items-start justify-center">
-            <Link href="/Profile" className="flex flex-row items-center gap-4">
+            <Link href="/Profile" onClick={()=> setProfileOpen((prev) => !prev)} className="flex flex-row items-center gap-4">
               <Image src="/pro.svg" alt="settings" width={25} height={20} />
               <span className="text-gray-600 text-m hover:border-b-2">
                 My Profile
               </span>
             </Link>
-            <Link href="/Profile" className="flex flex-row items-center gap-4">
+            <Link href="/Profile" onClick={()=> setProfileOpen((prev) => !prev)} className="flex flex-row items-center gap-4">
               <Image src="/bag.svg" alt="settings" width={25} height={20} />
               <span className="text-gray-600 text-m hover:border-b-2">
                 My Brand/Organization
               </span>
             </Link>
-            <Link href="/Profile" className="flex flex-row items-center gap-4">
+            <Link href="/Profile" onClick={()=> setProfileOpen((prev) => !prev)} className="flex flex-row items-center gap-4">
               <Image src="/setting.svg" alt="settings" width={25} height={20} />
               <span className="text-gray-600 text-m hover:border-b-2">
                 Setting

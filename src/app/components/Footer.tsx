@@ -4,7 +4,7 @@ import { Globe, Twitter, Github, Linkedin, Mail, MessageCircle } from "lucide-re
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-200 text-gray-700  mt-10 md:shadow-stone-500">
+    <footer className="bg-gray-200 text-gray-700   md:shadow-stone-500">
       <div className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
         <div>
           <h3 className="text-sm font-semibold mb-3">ABOUT</h3>

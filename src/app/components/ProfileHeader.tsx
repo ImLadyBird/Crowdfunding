@@ -91,7 +91,7 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-whiten">
       <div className="p-5 mx-auto">
         <div
           className="relative bg-gradient-to-br from-slate-400 via-slate-500 to-slate-400 rounded-3xl"
