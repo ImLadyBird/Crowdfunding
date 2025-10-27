@@ -6,6 +6,37 @@ import { WizardContext } from "../../WizardForm/page";
 import TagInput from "../TagInput";
 import Button from "../../components/Button";
 
+const categories: Record<string, string[]> = {
+  "Technology & Innovation": [
+    "Software & Apps",
+    "Consumer Electronics",
+    "Green Tech & Sustainability",
+    "Blockchain & Cryptocurrency",
+    "Biotech & Health Tech",
+    "Others",
+  ],
+  "Creative Art & Media": [
+    "Film & Video",
+    "Photography",
+    "Music",
+    "Design",
+    "Publishing",
+  ],
+  "Business & Entrepreneurship": [
+    "Startups",
+    "E-commerce",
+    "Services",
+    "Finance",
+  ],
+  "Games & Entertainment": ["Video Games", "Board Games", "Esports"],
+  "Social Causes & Community": [
+    "Education",
+    "Environment",
+    "Health",
+    "Charity",
+  ],
+};
+
 export default function Step1() {
   const wizard = useContext(WizardContext);
   const {
@@ -55,11 +86,20 @@ export default function Step1() {
             <label htmlFor="country" className="text-sm font-extralight">
               Country
             </label>
-            <input
+            <select
               {...register("country", { required: "This field is required" })}
-              type="text"
-              className="border-1 border-[#644FC1] rounded-[5px]"
-            />
+              className="border-1 border-[#644FC1] rounded-[5px] text-[12px] p-1"
+              defaultValue=""
+            >
+              <option className="" value="" disabled>
+                Select Country
+              </option>
+              <option value="USA">USA</option>
+              <option value="UK">UK</option>
+              <option value="Germany">Germany</option>
+              <option value="Japan">Japan</option>
+              <option value="India">India</option>
+            </select>
             {errors.country && (
               <p className="text-red-500 text-sm">
                 {errors.country.message as string}
@@ -73,14 +113,28 @@ export default function Step1() {
         </span>
         <div className="flex flex-col md:flex-row   gap-4">
           <div className="flex flex-col gap-1">
-            <label htmlFor="brand" className="text-sm font-extralight">
+            <label htmlFor="category" className="text-sm font-extralight">
               Category
             </label>
-            <input
+            <select
               {...register("category", { required: "This field is required" })}
-              type="text"
-              className="border-1 border-[#644FC1] rounded-[5px]"
-            />
+              className="border-1 border-[#644FC1] rounded-[5px] text-[12px] p-1"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Select Category
+              </option>
+              <option value="Technology & Innovation">
+                Technology & Innovation
+              </option>
+              <option value="Creative Art & Media">Creative Art & Media</option>
+              <option value="Business & Entrepreneurship">
+                Business & Entrepreneurship
+              </option>
+              <option value="Games & Entertainment">
+                Games & Entertainment
+              </option>
+            </select>
             {errors.category && (
               <p className="text-red-500 text-sm">
                 {errors.category.message as string}
@@ -88,19 +142,34 @@ export default function Step1() {
             )}
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="country" className="text-sm font-extralight">
+            <label htmlFor="subcategory" className="text-sm font-extralight">
               Subcategory
             </label>
-            <input
+            <select
               {...register("subcategory", {
                 required: "This field is required",
               })}
-              type="text"
-              className="border-1 border-[#644FC1] rounded-[5px]"
-            />
-            {errors.category && (
+              className="border-1 border-[#644FC1] rounded-[5px] text-[12px] p-1"
+              defaultValue=""
+              disabled={!watch("category")} // disable if no category selected
+            >
+              <option value="" disabled>
+                {watch("category")
+                  ? "Select Subcategory"
+                  : "Select Category First"}
+              </option>
+              {watch("category") &&
+                categories[watch("category") as keyof typeof categories].map(
+                  (sub) => (
+                    <option key={sub} value={sub}>
+                      {sub}
+                    </option>
+                  )
+                )}
+            </select>
+            {errors.subcategory && (
               <p className="text-red-500 text-sm">
-                {errors.category.message as string}
+                {errors.subcategory.message as string}
               </p>
             )}
           </div>

@@ -5,8 +5,6 @@ import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
 
-
-// ---- Types ----
 type Info = {
   id: string;
   brand: string;
@@ -21,7 +19,6 @@ type Info = {
   created_at?: string;
 };
 
-// ---- Categories Data ----
 const categories: Record<string, string[]> = {
   "Technology & Innovation": [
     "Software & Apps",
@@ -58,9 +55,7 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    null
-  );
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("Newest");
 
@@ -83,7 +78,6 @@ export default function ExplorePage() {
     setLoading(false);
   }
 
-  // ---- Filter logic ----
   const filteredInfos = infos
     .filter((info) => {
       const matchesSearch =
@@ -116,12 +110,6 @@ export default function ExplorePage() {
       return 0;
     });
 
-  // ---- Dropdown helper ----
-  const handleCategorySelect = (cat: string, sub: string) => {
-    setSelectedCategory(cat);
-    setSelectedSubcategory(sub);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 shadow-xl">
       {/* ---- Header Search ---- */}
@@ -152,45 +140,50 @@ export default function ExplorePage() {
 
       {/* ---- Filters Section ---- */}
       <div className="bg-white rounded-b-3xl shadow-sm p-10 mx-4">
-        <h2 className="text-3xl  text-center text-violet-900 pb-10">
-          Categories & SubCategories
+        <h2 className="text-3xl text-center text-violet-900 pb-10">
+          Categories & Subcategories
         </h2>
 
-        {/* ---- Dropdown Filters ---- */}
         <div className="flex flex-wrap justify-center gap-4 mb-6">
-          {Object.entries(categories).map(([cat, subs]) => (
-            <select
-              key={cat}
-              value={selectedCategory === cat ? selectedSubcategory ?? "" : ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "") {
-                  setSelectedCategory(null);
-                  setSelectedSubcategory(null);
-                } else {
-                  handleCategorySelect(cat, value);
-                }
-              }}
-              className={`appearance-none rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none transition-all duration-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 hover:border-violet-400 ${
-                selectedCategory === cat
-                  ? "border-violet-500 text-violet-700"
-                  : ""
-              }`}
-            >
-              <option value="">{cat}</option>
-              {subs.map((sub) => (
+          {/* ---- Category Dropdown ---- */}
+          <select
+            value={selectedCategory ?? ""}
+            onChange={(e) => {
+              const cat = e.target.value || null;
+              setSelectedCategory(cat);
+              setSelectedSubcategory(null); // reset subcategory
+            }}
+            className="rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+          >
+            <option value="">Select Category</option>
+            {Object.keys(categories).map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+
+          {/* ---- Subcategory Dropdown ---- */}
+          <select
+            value={selectedSubcategory ?? ""}
+            onChange={(e) => setSelectedSubcategory(e.target.value || null)}
+            disabled={!selectedCategory}
+            className="rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 disabled:opacity-50"
+          >
+            <option value="">Select Subcategory</option>
+            {selectedCategory &&
+              categories[selectedCategory].map((sub) => (
                 <option key={sub} value={sub}>
                   {sub}
                 </option>
               ))}
-            </select>
-          ))}
+          </select>
 
           {/* ---- Country Dropdown ---- */}
           <select
             value={selectedCountry ?? ""}
             onChange={(e) => setSelectedCountry(e.target.value || null)}
-            className=" appearance-none rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none transition-all duration-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 hover:border-violet-400"
+            className="rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
           >
             <option value="">Select Country</option>
             <option value="USA">USA</option>
@@ -248,8 +241,11 @@ export default function ExplorePage() {
           </div>
         )}
       </div>
-      <div>
-        <Link href="/WizardForm">add new one</Link>
+
+      <div className="text-center pb-10">
+        <Link href="/WizardForm" className="text-violet-700 underline">
+          Add new one
+        </Link>
       </div>
     </div>
   );

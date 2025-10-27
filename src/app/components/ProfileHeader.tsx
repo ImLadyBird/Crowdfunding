@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Edit3, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
+import { toast } from "react-toastify";
 
 type Info = {
   id: string;
@@ -76,7 +77,7 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
       setCoverImage(publicUrl);
       setSelectedImage(null);
       setIsModalOpen(false);
-      alert("Cover image saved successfully!");
+      toast.success("Cover image saved successfully!");
     } catch (err) {
       console.error("Error uploading/saving image:", err);
       alert("Failed to save cover image — see console.");
