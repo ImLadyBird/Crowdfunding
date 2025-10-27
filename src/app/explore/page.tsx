@@ -55,7 +55,9 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null
+  );
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("Newest");
 
@@ -153,7 +155,7 @@ export default function ExplorePage() {
               setSelectedCategory(cat);
               setSelectedSubcategory(null); // reset subcategory
             }}
-            className="rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+            className="rounded-[8px] border-2 border-violet-800 bg-gray-200 px-4 py-3 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 appearance-none text-center"
           >
             <option value="">Select Category</option>
             {Object.keys(categories).map((cat) => (
@@ -167,8 +169,8 @@ export default function ExplorePage() {
           <select
             value={selectedSubcategory ?? ""}
             onChange={(e) => setSelectedSubcategory(e.target.value || null)}
-            disabled={!selectedCategory}
-            className="rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 disabled:opacity-50"
+            hidden={!selectedCategory}
+            className="rounded-[8px] border-2 border-violet-800 bg-gray-200 px-4 py-3 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 disabled:opacity-50 appearance-none text-center"
           >
             <option value="">Select Subcategory</option>
             {selectedCategory &&
@@ -183,7 +185,7 @@ export default function ExplorePage() {
           <select
             value={selectedCountry ?? ""}
             onChange={(e) => setSelectedCountry(e.target.value || null)}
-            className="rounded-xl border border-violet-300 bg-white px-4 py-2 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+            className="rounded-[8px] border-2 border-violet-800 bg-gray-200 px-4 py-3 text-violet-900 shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 appearance-none text-center"
           >
             <option value="">Select Country</option>
             <option value="USA">USA</option>

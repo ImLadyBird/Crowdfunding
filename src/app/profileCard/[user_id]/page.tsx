@@ -23,6 +23,7 @@ export default function ProfilePage() {
   const user_id = params?.user_id as string;
 
   const [infos, setInfos] = useState<Info[]>([]);
+  const [abouts, setAbout] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,12 +37,27 @@ export default function ProfilePage() {
       .select("*")
       .eq("user_id", user_id);
 
+    const { data: aboutData, error: aboutError } = await supabase
+      .from("profileAbout")
+      .select("about")
+      .eq("user_id", user_id)
+      .maybeSingle();
+
     if (error) console.error("Error fetching user's projects:", error);
-    else setInfos(data || []);
+    else {
+      setInfos(data || []);
+      setAbout(aboutData?.about || "");
+        console.log("Fetched about:", aboutData?.about);
+    }
     setLoading(false);
   }
 
-  if (loading) return <p className="p-8 text-gray-500">Loading...</p>;
+  if (loading)
+    return (
+      <div className="w-full flex items-center justify-center pt-20 text-gray-400">
+        <p className="min-h-screen">Loading...</p>;
+      </div>
+    );
 
   if (infos.length === 0)
     return <p className="p-8 text-gray-500">This user has no projects yet.</p>;
@@ -97,6 +113,9 @@ export default function ProfilePage() {
           </a>
         )}
       </div>
+     <div>
+      {abouts}
+     </div>
     </div>
   );
 }
