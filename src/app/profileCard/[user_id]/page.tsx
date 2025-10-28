@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import Image from "next/image";
+import PublicProfileLookcontributersTier from "@/app/components/PublicProfileLookcontributersTier";
+import PublicProfileAbout from "@/app/components/PublicProfileAbout";
+import PublicProfileTeam from "@/app/components/PublicProfileTeam";
 
 type Info = {
   id: string;
@@ -23,7 +25,6 @@ export default function ProfilePage() {
   const user_id = params?.user_id as string;
 
   const [infos, setInfos] = useState<Info[]>([]);
-  const [abouts, setAbout] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,17 +38,9 @@ export default function ProfilePage() {
       .select("*")
       .eq("user_id", user_id);
 
-    const { data: aboutData, error: aboutError } = await supabase
-      .from("profileAbout")
-      .select("about")
-      .eq("user_id", user_id)
-      .maybeSingle();
-
     if (error) console.error("Error fetching user's projects:", error);
     else {
       setInfos(data || []);
-      setAbout(aboutData?.about || "");
-        console.log("Fetched about:", aboutData?.about);
     }
     setLoading(false);
   }
@@ -62,60 +55,38 @@ export default function ProfilePage() {
   if (infos.length === 0)
     return <p className="p-8 text-gray-500">This user has no projects yet.</p>;
 
-  const info = infos[0]; // assuming one project per user
+  const info = infos[0];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Cover Image */}
-      <div className="relative h-64 bg-gray-300">
-        {info.cover_image_url ? (
-          <Image
-            src={info.cover_image_url}
-            alt={info.brand}
-            fill
-            className="object-cover"
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            No cover image
+    <div className="min-h-screen bg-white pb-20 p-5 mx-auto">
+      <div
+        className="relative bg-linear-to-br height-[240px] from-slate-400 via-slate-500 to-slate-400 rounded-3xl"
+        style={{
+          height: "240px",
+          backgroundImage: info.cover_image_url
+            ? `url(${info.cover_image_url})`
+            : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <h1 className="absolute top-20 left-3 md:top-22 md:left-12 text-white text-3xl md:text-5xl font-medium">
+          {info.brand}
+        </h1>
+        <div className="absolute bottom-4 right-6 md:bottom-6 md:right-8 text-white text-right">
+          <div className="text-sm md:text-base opacity-90">
+            <span className="font-bold">000$</span> Total contribution
           </div>
-        )}
-      </div>
-
-      {/* Info Section */}
-      <div className="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-[-50px] relative z-10">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{info.brand}</h1>
-        <p className="text-gray-600 mb-4">
-          {info.category} • {info.country}
-        </p>
-
-        <p className="text-gray-700 mb-6">{info.details}</p>
-
-        <div className="flex flex-wrap gap-2">
-          {info.tags?.split(",").map((tag, i) => (
-            <span
-              key={i}
-              className="px-3 py-1 bg-violet-100 text-violet-700 text-sm rounded-full"
-            >
-              {tag.trim()}
-            </span>
-          ))}
         </div>
-
-        {info.socials && (
-          <a
-            href={info.socials}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-6 inline-block text-violet-700 font-medium hover:underline"
-          >
-            Visit Socials
-          </a>
-        )}
       </div>
-     <div>
-      {abouts}
-     </div>
+      <div className="w-[100px] h-[100px] bg-violet-900 rounded-2xl shadow-md mt-[-50px] left-10 mb-15 md:left-35 relative z-10">
+        <h2 className="text-xl font-medium top-27 absolute text-gray-900">
+          Wish Work
+        </h2>
+      </div>
+      <PublicProfileLookcontributersTier user_id={user_id} />
+      <PublicProfileAbout user_id={user_id} />
+      <PublicProfileTeam user_id={user_id}/>
     </div>
   );
 }

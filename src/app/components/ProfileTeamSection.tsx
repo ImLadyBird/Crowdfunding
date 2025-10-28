@@ -1,3 +1,5 @@
+"use client";
+
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import React, { useEffect, useReducer } from "react";
@@ -8,6 +10,7 @@ type TeamMember = {
   name: string;
   role: string;
   description?: string;
+  user_id?: string;
 };
 
 type State = {
@@ -81,9 +84,24 @@ export default function TeamManager() {
     fetchMembers();
   }, []);
 
+  // 🔹 Fetch only current user’s team members
   async function fetchMembers() {
     dispatch({ type: "SET_LOADING", payload: true });
-    const { data, error } = await supabase.from("team").select("*").order("created_at", { ascending: true });
+
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (!user) {
+      toast.error("User not authenticated");
+      dispatch({ type: "SET_MEMBERS", payload: [] });
+      dispatch({ type: "SET_LOADING", payload: false });
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("team")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true });
 
     if (error) {
       console.error(error);
@@ -91,9 +109,11 @@ export default function TeamManager() {
     } else {
       dispatch({ type: "SET_MEMBERS", payload: data || [] });
     }
+
     dispatch({ type: "SET_LOADING", payload: false });
   }
 
+  // 🔹 Save (insert or update) team member
   async function saveMember() {
     if (!state.name.trim() || !state.role.trim()) {
       toast.error("Name and role are required");
@@ -102,8 +122,17 @@ export default function TeamManager() {
 
     dispatch({ type: "SET_SAVING", payload: true });
 
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+    if (!user) {
+      toast.error("Not authenticated");
+      dispatch({ type: "SET_SAVING", payload: false });
+      return;
+    }
+
     try {
       if (state.editingMember) {
+        // 🔹 Update existing member
         const { error } = await supabase
           .from("team")
           .update({
@@ -112,16 +141,19 @@ export default function TeamManager() {
             description: state.description.trim(),
             updated_at: new Date().toISOString(),
           })
-          .eq("id", state.editingMember.id);
+          .eq("id", state.editingMember.id)
+          .eq("user_id", user.id);
 
         if (error) throw error;
         toast.success("Member updated");
       } else {
+        // 🔹 Create new member (include user_id)
         const { error } = await supabase.from("team").insert([
           {
             name: state.name.trim(),
             role: state.role.trim(),
             description: state.description.trim(),
+            user_id: user.id,
           },
         ]);
 
@@ -139,14 +171,17 @@ export default function TeamManager() {
     }
   }
 
+  // 🔹 Delete member
   async function handleDelete() {
     if (!state.editingMember) return;
     if (!confirm("Delete this member? This cannot be undone.")) return;
 
     dispatch({ type: "SET_DELETING", payload: true });
+
     try {
       const { error } = await supabase.from("team").delete().eq("id", state.editingMember.id);
       if (error) throw error;
+
       toast.success("Member deleted");
       await fetchMembers();
       dispatch({ type: "CLOSE_MODAL" });
@@ -170,22 +205,27 @@ export default function TeamManager() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {state.members.map((m) => (
-            <div key={m.id} className="flex flex-col max-w-[250px] relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden">
-                 <button
-                  onClick={() => dispatch({ type: "OPEN_EDIT_MODAL", payload: m })}
-                  className="absolute top-2 right-2 cursor-pointer hover:bg-gray-200 p-1 text-white rounded-md text-sm"
-                >
-                  <Image src="/edit.png" alt="edit" width={30} height={30} />
-                </button>
+            <div
+              key={m.id}
+              className="flex flex-col max-w-[250px] relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden"
+            >
+              <button
+                onClick={() => dispatch({ type: "OPEN_EDIT_MODAL", payload: m })}
+                className="absolute top-2 right-2 cursor-pointer hover:bg-gray-200 p-1 rounded-md"
+              >
+                <Image src="/edit.png" alt="edit" width={30} height={30} />
+              </button>
+
               <Image src="/user.png" alt="avatar" width={100} height={100} className="mt-4" />
               <h1 className="text-2xl font-semibold mt-4 text-violet-800">{m.name}</h1>
-              <div className=" flex flex-col gap-3 justify-center items-center text-center">
-                <p className="text-gray-700 bg-gray-300 px-2 py-1 opacity-40 rounded-4xl ">{m.role}</p>
+              <div className="flex flex-col gap-3 justify-center items-center text-center">
+                <p className="text-gray-700 bg-gray-300 px-2 py-1 opacity-40 rounded-full">{m.role}</p>
                 <p className="text-gray-400 text-sm px-3 font-extralight">{m.description}</p>
               </div>
             </div>
           ))}
 
+          {/* Add new member card */}
           <div className="border border-gray-400 flex items-center max-w-[250px] justify-center">
             <button
               onClick={() => dispatch({ type: "OPEN_CREATE_MODAL" })}
@@ -194,7 +234,13 @@ export default function TeamManager() {
               <div className="mb-2 text-gray-400 text-center">Add Member</div>
               <div className="bg-violet-800 text-white rounded-lg p-4 flex items-center justify-center">
                 <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M12 5v14M5 12h14"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
             </button>
@@ -202,11 +248,17 @@ export default function TeamManager() {
         </div>
       )}
 
+      {/* Modal */}
       {state.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => dispatch({ type: "CLOSE_MODAL" })} />
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => dispatch({ type: "CLOSE_MODAL" })}
+          />
           <div className="relative bg-white rounded-lg w-[min(90%,700px)] p-6 z-10 shadow-lg">
-            <h3 className="text-lg font-medium mb-4">{state.editingMember ? "Edit Member" : "Add Member"}</h3>
+            <h3 className="text-lg font-medium mb-4">
+              {state.editingMember ? "Edit Member" : "Add Member"}
+            </h3>
 
             <div className="space-y-4">
               <label className="block">
@@ -214,7 +266,9 @@ export default function TeamManager() {
                 <input
                   className="w-full border px-3 py-2 rounded"
                   value={state.name}
-                  onChange={(e) => dispatch({ type: "SET_FIELD", field: "name", payload: e.target.value })}
+                  onChange={(e) =>
+                    dispatch({ type: "SET_FIELD", field: "name", payload: e.target.value })
+                  }
                 />
               </label>
 
@@ -223,7 +277,9 @@ export default function TeamManager() {
                 <input
                   className="w-full border px-3 py-2 rounded"
                   value={state.role}
-                  onChange={(e) => dispatch({ type: "SET_FIELD", field: "role", payload: e.target.value })}
+                  onChange={(e) =>
+                    dispatch({ type: "SET_FIELD", field: "role", payload: e.target.value })
+                  }
                 />
               </label>
 
@@ -232,24 +288,41 @@ export default function TeamManager() {
                 <textarea
                   className="w-full border px-3 py-2 rounded"
                   value={state.description}
-                  onChange={(e) => dispatch({ type: "SET_FIELD", field: "description", payload: e.target.value })}
+                  onChange={(e) =>
+                    dispatch({
+                      type: "SET_FIELD",
+                      field: "description",
+                      payload: e.target.value,
+                    })
+                  }
                 />
               </label>
             </div>
 
             <div className="mt-6 flex justify-between items-center">
               <div className="flex gap-2">
-                <button onClick={saveMember} disabled={state.saving} className="bg-violet-600 text-white px-4 py-2 rounded disabled:opacity-60">
+                <button
+                  onClick={saveMember}
+                  disabled={state.saving}
+                  className="bg-violet-600 text-white px-4 py-2 rounded disabled:opacity-60"
+                >
                   {state.saving ? "Saving..." : "Save"}
                 </button>
-                <button onClick={() => dispatch({ type: "CLOSE_MODAL" })} className="px-4 py-2 border rounded">
+                <button
+                  onClick={() => dispatch({ type: "CLOSE_MODAL" })}
+                  className="px-4 py-2 border rounded"
+                >
                   Cancel
                 </button>
               </div>
 
               {state.editingMember && (
                 <div>
-                  <button onClick={handleDelete} disabled={state.deleting} className="px-4 py-2 text-red-600 border border-red-600 rounded disabled:opacity-60">
+                  <button
+                    onClick={handleDelete}
+                    disabled={state.deleting}
+                    className="px-4 py-2 text-red-600 border border-red-600 rounded disabled:opacity-60"
+                  >
                     {state.deleting ? "Deleting..." : "Delete"}
                   </button>
                 </div>
