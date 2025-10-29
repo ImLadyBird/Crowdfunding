@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
+import EditProfile from "../components/EditProfile";
 
 type Info = {
   id: string;
@@ -15,6 +16,7 @@ type Info = {
   details: string;
   socials: string;
   cover_image_url?: string;
+  profile_image_url?: string;
   user_id: string;
   created_at?: string;
 };
@@ -226,8 +228,19 @@ export default function ExplorePage() {
                       No image
                     </div>
                   )}
-                  <div className="absolute bottom-[-16px] left-5 bg-white p-1 rounded-2xl shadow">
-                    <Image src="/pro.svg" alt="pro" width={70} height={20} />
+                  <div className="absolute bottom-[-40px] left-5 rounded-full w-[100px] h-[100px]  p-1">
+                    {info.profile_image_url ? (
+                    <Image
+                      src={info.profile_image_url}
+                      alt={info.brand}
+                      fill
+                      className="object-cover rounded-full shadow-md " 
+                    />
+                  ) : (
+                    <div className="absolute bottom-[-1px] bg-white left-1 shadow-md  text-center items-center flex justify-center rounded-full w-[100px] h-[100px]  p-1">
+                      <Image src="/user.png" alt="user" width={70} height={70} />
+                    </div>
+                  )}
                   </div>
                 </div>
                 <div className="p-5 pt-8">

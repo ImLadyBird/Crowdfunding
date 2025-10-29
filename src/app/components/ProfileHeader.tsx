@@ -4,6 +4,7 @@ import { Edit3, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "react-toastify";
+import EditProfile from "./EditProfile";
 
 type Info = {
   id: string;
@@ -86,9 +87,29 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
     }
   };
 
-  const handleReset = () => {
-    setCoverImage(null);
-    setSelectedImage(null);
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete the cover image?")) return;
+
+    try {
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) throw new Error("User not logged in");
+
+      // Update database to remove cover image
+      const { error: dbError } = await supabase
+        .from("Info")
+        .update({ cover_image_url: null })
+        .eq("user_id", user.id);
+
+      if (dbError) throw dbError;
+
+      setCoverImage(null);
+      setSelectedImage(null);
+      setIsModalOpen(false);
+      toast.success("Cover image deleted successfully!");
+    } catch (err) {
+      console.error("Error deleting cover image:", err);
+      alert("Failed to delete cover image — see console.");
+    }
   };
 
   return (
@@ -124,10 +145,11 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
           </div>
         </div>
 
-        <div className="px-4 md:px-8 pb-8">
-          <div className="mt-4">
-            <h2 className="text-3xl font-bold text-gray-900">Wish Work</h2>
-          </div>
+        <div className="w-[100px] h-[100px] flex items-center justify-center bg-violet-900 rounded-2xl shadow-md mt-[-50px] left-10 mb-15 md:left-35 relative z-10">
+          <EditProfile />
+          <h2 className="text-xl font-medium top-27 absolute text-gray-900">
+            Wish Work
+          </h2>
         </div>
       </div>
 
@@ -174,10 +196,10 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
 
             <div className="flex justify-end gap-3">
               <button
-                onClick={handleReset}
-                className="px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700"
+                onClick={handleDelete}
+                className="px-4 py-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
               >
-                Reset
+                Delete
               </button>
               <button
                 onClick={handleSave}

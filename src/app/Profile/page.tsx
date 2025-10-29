@@ -55,7 +55,7 @@ export default function Profile() {
 
   if (loading) return (
     <div className="w-full flex items-center justify-center pt-20 text-gray-400">
-      <p className="min-h-screen">Loading...</p>;
+      <p className="min-h-screen">Loading...</p>
     </div>
   )
 

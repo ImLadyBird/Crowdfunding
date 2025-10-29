@@ -10,14 +10,14 @@ export default function ProfileTopSection() {
       </div>
       <div className="flex flex-row gap-6 justify-around items-center">
         <div className="flex flex-col gap-3 justify-start items-start">
-          <h2 className="text-xl font-semibold">Individuals</h2>
+          <h2 className="text-sm md:text-xl font-semibold">Individuals</h2>
           <div className="flex flex-col gap-4 items-center justify-center">
             <div className="w-[100px] h-[100px] border-4 border-violet-900 rounded-[20px] bg-gray-300"></div>
             <p>Nasim</p>
           </div>
         </div>
         <div className="flex flex-col gap-3 justify-start items-start">
-          <h2 className="text-xl font-semibold">Brand ot Organization</h2>
+          <h2 className="text-sm md:text-xl font-semibold">Brand ot Organization</h2>
           <div className="flex flex-col gap-4 items-center justify-center">
             <div className="w-[100px] h-[100px] border-4 border-violet-900 rounded-[20px] bg-gray-300"></div>
             <p>Kelaasor</p>

@@ -6,6 +6,10 @@ import { supabase } from "@/lib/supabaseClient";
 import PublicProfileLookcontributersTier from "@/app/components/PublicProfileLookcontributersTier";
 import PublicProfileAbout from "@/app/components/PublicProfileAbout";
 import PublicProfileTeam from "@/app/components/PublicProfileTeam";
+import ProfileTopSection from "@/app/components/ProfileTopSection";
+import PublicProfileFAQ from "@/app/components/PublicProfileFAQ";
+import ProfileUpdateSection from "@/app/components/ProfileUpdateSection";
+import Image from "next/image";
 
 type Info = {
   id: string;
@@ -17,6 +21,7 @@ type Info = {
   details: string;
   socials: string;
   cover_image_url?: string;
+  profile_image_url?: string;
   user_id: string;
 };
 
@@ -48,7 +53,7 @@ export default function ProfilePage() {
   if (loading)
     return (
       <div className="w-full flex items-center justify-center pt-20 text-gray-400">
-        <p className="min-h-screen">Loading...</p>;
+        <p className="min-h-screen">Loading...</p>
       </div>
     );
 
@@ -79,14 +84,29 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-      <div className="w-[100px] h-[100px] bg-violet-900 rounded-2xl shadow-md mt-[-50px] left-10 mb-15 md:left-35 relative z-10">
-        <h2 className="text-xl font-medium top-27 absolute text-gray-900">
+      <div className="w-[120px] h-[120px]  mt-[-60px] left-10 mb-15 md:left-35 relative z-10">
+        {info.profile_image_url ? (
+          <Image
+            src={info.profile_image_url}
+            alt="Profile"
+            fill
+            className="object-cover rounded-full shadow-md"
+          />
+        ) : (
+          <div className="absolute shadow-md bg-white left-1 rounded-full text-center items-center flex justify-center border- rounded-full w-[120px] h-[120px]  p-1">
+            <Image src="/user.png" alt="user" width={80} height={80} />
+          </div>
+        )}
+        <h2 className="text-xl font-medium top-32 left-1.5 absolute text-gray-900 ">
           Wish Work
         </h2>
       </div>
       <PublicProfileLookcontributersTier user_id={user_id} />
       <PublicProfileAbout user_id={user_id} />
-      <PublicProfileTeam user_id={user_id}/>
+      <PublicProfileTeam user_id={user_id} />
+      <ProfileTopSection />
+      <PublicProfileFAQ user_id={user_id} />
+      <ProfileUpdateSection />
     </div>
   );
 }
