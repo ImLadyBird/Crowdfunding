@@ -7,123 +7,114 @@ import { Camera } from "lucide-react";
 import { toast } from "react-toastify";
 
 
+async function getCurrentUser() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data?.user) throw new Error("User not logged in");
+  return data.user;
+}
+
+async function getProfileImage(userId: string) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("profile_image_url")
+    .eq("id", userId)
+    .maybeSingle();
+  return data?.profile_image_url ?? null;
+}
+
+async function uploadProfileImage(userId: string, file: File) {
+  const fileExt = file.name.split(".").pop();
+  const filePath = `${userId}-${Date.now()}.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("profile-images")
+    .upload(filePath, file, { upsert: true, contentType: file.type });
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage.from("profile-images").getPublicUrl(filePath);
+  const publicUrl = data.publicUrl;
+
+  const { error: dbError } = await supabase
+    .from("profiles")
+    .upsert({ id: userId, profile_image_url: publicUrl });
+  if (dbError) throw dbError;
+
+  return publicUrl;
+}
+
+async function removeProfileImage(userId: string) {
+  const { error } = await supabase
+    .from("profiles")
+    .update({ profile_image_url: null })
+    .eq("id", userId);
+  if (error) throw error;
+}
+
+
 export default function EditProfile() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // Fetch current profile image
-  useEffect(() => { 
-    const fetchProfile = async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData?.user;
-      if (!user) return;
-
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("profile_image_url")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profileData?.profile_image_url) {
-        setProfileImage(profileData.profile_image_url);
+  useEffect(() => {
+    (async () => {
+      try {
+        const user = await getCurrentUser();
+        setUserId(user.id);
+        const url = await getProfileImage(user.id);
+        setProfileImage(url);
+      } catch (err) {
+        console.error(err);
       }
-    };
-
-    fetchProfile();
+    })();
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.size <= 5 * 1024 * 1024) {
-      setSelectedFile(file);
-      setProfileImage(URL.createObjectURL(file)); // preview
-    } else {
-      toast.error("File size must be under 5MB");
-    }
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+    if (selected.size > 5 * 1024 * 1024) return toast.error("Max 5MB file size");
+    setFile(selected);
+    setProfileImage(URL.createObjectURL(selected));
   };
 
-  const handleSaveProfileImage = async () => {
-    if (!selectedFile) {
-      toast.warning("Please select an image first");
-      return;
-    }
-
+  const handleSave = async () => {
+    if (!file || !userId) return toast.warning("Please select an image");
     setIsUploading(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData?.user;
-      if (!user) throw new Error("User not logged in");
-
-      const fileExt = selectedFile.name.split(".").pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const filePath = fileName;
-
-      const { error: uploadError } = await supabase.storage
-        .from("profile-images")
-        .upload(filePath, selectedFile, {
-          upsert: true,
-          contentType: selectedFile.type,
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from("profile-images")
-        .getPublicUrl(filePath);
-      const publicUrl = data.publicUrl;
-
-      const { error: dbError } = await supabase
-        .from("profiles")
-        .upsert({
-          id: user.id,
-          profile_image_url: publicUrl,
-        });
-
-      if (dbError) throw dbError;
-
-      setProfileImage(publicUrl);
-      setSelectedFile(null);
-      setIsModalOpen(false);
-      toast.success("Profile image updated successfully!");
+      const url = await uploadProfileImage(userId, file);
+      setProfileImage(url);
+      setFile(null);
+      toast.success("Profile updated");
+      setIsOpen(false);
     } catch (err) {
-      console.error("Error uploading profile image:", err);
-      toast.error("Failed to upload profile image");
+      console.error(err);
+      toast.error("Upload failed");
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleReset = async () => {
+  const handleDelete = async () => {
+    if (!userId) return;
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData?.user;
-      if (!user) return;
-
-      const { error } = await supabase
-        .from("profiles")
-        .update({ profile_image_url: null })
-        .eq("id", user.id);
-
-      if (error) throw error;
-
+      await removeProfileImage(userId);
       setProfileImage(null);
-      setSelectedFile(null);
-      setIsModalOpen(false);
+      setFile(null);
       toast.success("Profile image removed");
+      setIsOpen(false);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to remove profile image");
+      toast.error("Failed to remove");
     }
   };
 
   return (
     <div className="relative flex flex-col items-center">
-      {/* Profile image preview */}
       <div
+        onClick={() => setIsOpen(true)}
         className="w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-white shadow-lg relative cursor-pointer"
-        onClick={() => setIsModalOpen(true)}
       >
         {profileImage ? (
           <Image src={profileImage} alt="Profile" fill className="object-cover" />
@@ -135,9 +126,9 @@ export default function EditProfile() {
       </div>
 
       {/* Modal */}
-      {isModalOpen && (
+      {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white w-[90%] md:w-[400px] rounded-2xl p-6 relative shadow-lg">
+          <div className="bg-white w-[90%] md:w-[400px] rounded-2xl p-6 shadow-lg">
             <h2 className="text-center text-lg font-semibold mb-4">
               Edit Profile Image
             </h2>
@@ -152,7 +143,7 @@ export default function EditProfile() {
                   className="h-full w-full object-cover rounded-full"
                 />
               ) : (
-                <span className="text-gray-400">No Image</span>
+                <span>No Image</span>
               )}
             </div>
 
@@ -176,20 +167,20 @@ export default function EditProfile() {
 
             <div className="flex justify-end gap-3">
               <button
-                onClick={handleReset}
+                onClick={handleDelete}
                 className="px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700"
               >
                 Delete
               </button>
               <button
-                onClick={handleSaveProfileImage}
+                onClick={handleSave}
                 disabled={isUploading}
                 className="px-4 py-2 rounded-md bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50"
               >
                 {isUploading ? "Saving..." : "Save"}
               </button>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => setIsOpen(false)}
                 className="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
               >
                 Cancel
