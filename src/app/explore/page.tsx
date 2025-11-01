@@ -232,7 +232,7 @@ export default function ExplorePage() {
                     {info.profile_image_url ? (
                     <Image
                       src={info.profile_image_url}
-                      alt={info.brand}
+                      alt='profile'
                       fill
                       className="object-cover rounded-full shadow-md " 
                     />

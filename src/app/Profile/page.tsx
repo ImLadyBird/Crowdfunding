@@ -53,11 +53,12 @@ export default function Profile() {
     checkUser();
   }, []);
 
-  if (loading) return (
-    <div className="w-full flex items-center justify-center pt-20 text-gray-400">
-      <p className="min-h-screen">Loading...</p>
-    </div>
-  )
+  if (loading)
+    return (
+      <div className="w-full flex items-center justify-center pt-20 text-gray-400">
+        <p className="min-h-screen">Loading...</p>
+      </div>
+    );
 
   return (
     <div className="bg-white flex flex-col min-h-screen">
