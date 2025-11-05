@@ -25,11 +25,16 @@ export default function EditProfile() {
 
         const { data: profileData } = await supabase
           .from("Info")
-          .select("profile_image_url")
-          .eq("user_id", user.id)
-          .maybeSingle();
+          .select("*")
+          .eq("user_id", user.id);
 
-        setProfileImage(profileData?.profile_image_url || null);
+        if (profileData && profileData.length > 0) {
+          setProfileImage(profileData[0].profile_image_url || null);
+          console.log(profileData[0].profile_image_url);
+        } else {
+          setProfileImage(null);
+          console.log("No profile data found");
+        }
       } catch (err) {
         console.error("Error loading profile:", err);
       }
@@ -47,7 +52,8 @@ export default function EditProfile() {
   };
 
   const handleSave = async () => {
-    if (!selectedImage || !userId) return toast.warning("Please select an image");
+    if (!selectedImage || !userId)
+      return toast.warning("Please select an image");
     setIsSaving(true);
 
     try {
@@ -97,7 +103,7 @@ export default function EditProfile() {
       const { error } = await supabase
         .from("Info")
         .update({ profile_image_url: null })
-        .eq("id", userId);
+        .eq("user_id", userId);
 
       if (error) throw error;
 
