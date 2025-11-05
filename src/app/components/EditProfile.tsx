@@ -2,122 +2,129 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { Camera, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { Camera } from "lucide-react";
 import { toast } from "react-toastify";
 
-
-async function getCurrentUser() {
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) throw new Error("User not logged in");
-  return data.user;
-}
-
-async function getProfileImage(userId: string) {
-  const { data } = await supabase
-    .from("profiles")
-    .select("profile_image_url")
-    .eq("id", userId)
-    .maybeSingle();
-  return data?.profile_image_url ?? null;
-}
-
-async function uploadProfileImage(userId: string, file: File) {
-  const fileExt = file.name.split(".").pop();
-  const filePath = `${userId}-${Date.now()}.${fileExt}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from("profile-images")
-    .upload(filePath, file, { upsert: true, contentType: file.type });
-  if (uploadError) throw uploadError;
-
-  const { data } = supabase.storage.from("profile-images").getPublicUrl(filePath);
-  const publicUrl = data.publicUrl;
-
-  const { error: dbError } = await supabase
-    .from("profiles")
-    .upsert({ id: userId, profile_image_url: publicUrl });
-  if (dbError) throw dbError;
-
-  return publicUrl;
-}
-
-async function removeProfileImage(userId: string) {
-  const { error } = await supabase
-    .from("profiles")
-    .update({ profile_image_url: null })
-    .eq("id", userId);
-  if (error) throw error;
-}
-
-
 export default function EditProfile() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
+  // Fetch current user and existing profile image
   useEffect(() => {
     (async () => {
       try {
-        const user = await getCurrentUser();
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user) throw new Error("User not logged in");
+
+        const user = data.user;
         setUserId(user.id);
-        const url = await getProfileImage(user.id);
-        setProfileImage(url);
+
+        const { data: profileData } = await supabase
+          .from("Info")
+          .select("profile_image_url")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        setProfileImage(profileData?.profile_image_url || null);
       } catch (err) {
-        console.error(err);
+        console.error("Error loading profile:", err);
       }
     })();
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
-    if (selected.size > 5 * 1024 * 1024) return toast.error("Max 5MB file size");
-    setFile(selected);
-    setProfileImage(URL.createObjectURL(selected));
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.size <= 5 * 1024 * 1024) {
+      setSelectedImage(file);
+      setProfileImage(URL.createObjectURL(file));
+    } else {
+      toast.error("File size must be under 5MB");
+    }
   };
 
   const handleSave = async () => {
-    if (!file || !userId) return toast.warning("Please select an image");
-    setIsUploading(true);
+    if (!selectedImage || !userId) return toast.warning("Please select an image");
+    setIsSaving(true);
+
     try {
-      const url = await uploadProfileImage(userId, file);
-      setProfileImage(url);
-      setFile(null);
-      toast.success("Profile updated");
-      setIsOpen(false);
+      const fileExt = selectedImage.name.split(".").pop();
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("profile-images")
+        .upload(filePath, selectedImage, {
+          upsert: true,
+          contentType: selectedImage.type,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from("profile-images")
+        .getPublicUrl(filePath);
+
+      const publicUrl = data.publicUrl;
+
+      const { error: dbError } = await supabase
+        .from("Info")
+        .update({ profile_image_url: publicUrl })
+        .eq("user_id", userId);
+
+      if (dbError) throw dbError;
+
+      setProfileImage(publicUrl);
+      setSelectedImage(null);
+      setIsModalOpen(false);
+      toast.success("Profile image saved successfully!");
     } catch (err) {
-      console.error(err);
-      toast.error("Upload failed");
+      console.error("Error saving profile image:", err);
+      toast.error("Failed to save image");
     } finally {
-      setIsUploading(false);
+      setIsSaving(false);
     }
   };
 
   const handleDelete = async () => {
     if (!userId) return;
+    if (!confirm("Are you sure you want to delete your profile image?")) return;
+
     try {
-      await removeProfileImage(userId);
+      const { error } = await supabase
+        .from("Info")
+        .update({ profile_image_url: null })
+        .eq("id", userId);
+
+      if (error) throw error;
+
       setProfileImage(null);
-      setFile(null);
-      toast.success("Profile image removed");
-      setIsOpen(false);
+      setSelectedImage(null);
+      setIsModalOpen(false);
+      toast.success("Profile image deleted successfully!");
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to remove");
+      console.error("Error deleting profile image:", err);
+      toast.error("Failed to delete image");
     }
   };
 
   return (
     <div className="relative flex flex-col items-center">
+      {/* Avatar display */}
       <div
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsModalOpen(true)}
         className="w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-white shadow-lg relative cursor-pointer"
       >
         {profileImage ? (
-          <Image src={profileImage} alt="Profile" fill className="object-cover" />
+          <Image
+            src={profileImage}
+            alt="Profile"
+            fill
+            className="object-cover"
+          />
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-200 text-gray-400">
             <Camera className="w-8 h-8" />
@@ -126,7 +133,7 @@ export default function EditProfile() {
       </div>
 
       {/* Modal */}
-      {isOpen && (
+      {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white w-[90%] md:w-[400px] rounded-2xl p-6 shadow-lg">
             <h2 className="text-center text-lg font-semibold mb-4">
@@ -152,14 +159,14 @@ export default function EditProfile() {
                 type="file"
                 accept=".jpg,.jpeg,.png"
                 id="profile-upload"
-                onChange={handleFileChange}
+                onChange={handleImageChange}
                 className="hidden"
               />
               <label
                 htmlFor="profile-upload"
                 className="flex items-center gap-2 text-violet-700 cursor-pointer"
               >
-                <Camera className="w-5 h-5" />
+                <ImageIcon className="w-5 h-5" />
                 Upload new image
               </label>
               <span className="text-xs text-gray-500">Max 5MB • JPG, PNG</span>
@@ -168,19 +175,19 @@ export default function EditProfile() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700"
+                className="px-4 py-2 rounded-md bg-red-500 hover:bg-red-600 text-white"
               >
                 Delete
               </button>
               <button
                 onClick={handleSave}
-                disabled={isUploading}
+                disabled={isSaving}
                 className="px-4 py-2 rounded-md bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50"
               >
-                {isUploading ? "Saving..." : "Save"}
+                {isSaving ? "Saving..." : "Save"}
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsModalOpen(false)}
                 className="px-4 py-2 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300"
               >
                 Cancel

@@ -85,7 +85,9 @@ export default function Header() {
   return (
     <header className="relative">
       <div className="bg-gray-200 flex flex-row justify-between items-center p-4 md:px-10 md:shadow-sm">
-        <Image src="/logo.png" alt="logo" width={50} height={68} />
+        <Link href="/">
+          <Image src="/logo.png" alt="logo" width={50} height={68} />
+        </Link>
 
         {/* 🔹 Mobile buttons */}
         <div className="flex flex-row gap-4 md:hidden">

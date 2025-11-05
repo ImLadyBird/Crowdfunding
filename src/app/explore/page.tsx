@@ -84,6 +84,7 @@ export default function ExplorePage() {
 
   const filteredInfos = infos
     .filter((info) => {
+      
       const matchesSearch =
         info.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
         info.details.toLowerCase().includes(searchTerm.toLowerCase());
