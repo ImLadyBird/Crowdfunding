@@ -8,32 +8,35 @@ import { supabase } from "@/lib/supabaseClient";
 export default function Home() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Check if user is logged in using Supabase Auth
-useEffect(() => {
-  const checkUser = async () => {
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+
+      // ✅ Stop loading after checking the session
+      setLoading(false);
+    };
+
+    checkUser();
+
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session?.user);
+      setLoading(false); // ✅ Also stop loading when auth state changes
+    });
 
-    if (session) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-  };
-
-  checkUser();
-
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((_event, session) => {
-    setIsAuthenticated(!!session?.user);
-  });
-
-  return () => subscription.unsubscribe();
-}, []);
-
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleStart = () => {
     if (isAuthenticated) {
@@ -43,9 +46,12 @@ useEffect(() => {
     }
   };
 
-  if (isAuthenticated === null) {
-    return <p className="text-center mt-10">Loading...</p>;
-  }
+  if (loading)
+    return (
+      <div className="w-full flex items-center justify-center pt-20 text-gray-400">
+        <p className="min-h-screen">Loading...</p>
+      </div>
+    );
 
   return (
     <div className="flex flex-col items-center justify-center px-9 py-15 gap-5">
@@ -59,10 +65,10 @@ useEffect(() => {
         dolorem similique deleniti.
       </p>
 
-      <div className="flex flex-col items-center justify-center gap-5  border-[1.5px] border-[#644FC1] rounded-2xl mt-2 py-9 px-3">
+      <div className="flex flex-col items-center justify-center gap-5 border-3 border-violet-800 rounded-2xl mt-2 py-9 px-3">
         <Image src="/bag.png" alt="bag" width={60} height={60} />
 
-        <h2 className="text-xl font-bold text-center text-[#644FC1] mt-5">
+        <h2 className="text-xl font-bold text-center text-violet-800 mt-5">
           Brand Your Organization
         </h2>
 
@@ -73,7 +79,7 @@ useEffect(() => {
         <div className="w-full flex flex-col items-center justify-center mt-5">
           <button
             onClick={handleStart}
-            className="w-full bg-[#644FC1] text-white text-sm font-medium py-2 px-4 rounded-lg cursor-pointer hover:bg-amber-50 hover:text-[#644FC1] transition"
+            className="w-full bg-violet-800 text-white text-sm font-medium py-2 px-4 rounded-lg cursor-pointer hover:bg-amber-50 hover:text-[#644FC1] transition"
           >
             Start
           </button>

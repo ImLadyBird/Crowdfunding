@@ -64,12 +64,24 @@ export default function Profile() {
     <div className="bg-white flex flex-col min-h-screen">
       <ProfileHeader infoList={infoList} />
       <ProfileGuideBar />
-      <ProfileContributorTier />
-      <ProfileAboutSection />
-      <ProfileTeamSection />
-      <ProfileTopSection />
-      <ProfileFAQSection />
-      <ProfileUpdateSection />
+      <div id="contribution">
+        <ProfileContributorTier />
+      </div>
+      <div id="about">
+        <ProfileAboutSection />
+      </div>
+      <div id="team">
+        <ProfileTeamSection />
+      </div>
+      <div id="tops">
+        <ProfileTopSection />
+      </div>
+      <div id="faq">
+        <ProfileFAQSection />
+      </div>
+      <div id="updates">
+        <ProfileUpdateSection />
+      </div>
     </div>
   );
 }

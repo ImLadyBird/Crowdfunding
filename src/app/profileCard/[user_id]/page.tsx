@@ -97,8 +97,8 @@ export default function ProfilePage() {
             <Image src="/user.png" alt="user" width={80} height={80} />
           </div>
         )}
-        <h2 className="text-xl font-medium top-32 left-1.5 absolute text-gray-900 ">
-          Wish Work
+        <h2 className="text-xl font-medium top-33 left-4.5 absolute text-gray-900 ">
+         {info.brand}
         </h2>
       </div>
       <PublicProfileLookcontributersTier user_id={user_id} />

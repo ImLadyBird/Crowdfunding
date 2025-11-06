@@ -118,8 +118,8 @@ export default function Header() {
           {[
             { href: "/", label: "Home" },
             { href: "/explore", label: "Explore" },
-            { href: "/about", label: "About Us" },
-            { href: "/help", label: "Help & Support" },
+            { href: "/aboutUs", label: "About Us" },
+            { href: "/help&support", label: "Help & Support" },
           ].map(({ href, label }) => (
             <Link
               key={href}
@@ -163,8 +163,8 @@ export default function Header() {
             {[
               { href: "/", label: "Home", rounded: "rounded-t-lg" },
               { href: "/explore", label: "Explore" },
-              { href: "/about", label: "About Us" },
-              { href: "/help", label: "Help", rounded: "rounded-b-lg" },
+              { href: "/aboutUs", label: "About Us" },
+              { href: "/help&support", label: "Help", rounded: "rounded-b-lg" },
             ].map(({ href, label, rounded }) => (
               <Link
                 key={href}
