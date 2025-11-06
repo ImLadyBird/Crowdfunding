@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import InputField from "../InputField";
 import Image from "next/image";
-import {z} from "zod"; 
-import { zodResolver } from "@hookform/resolvers/zod"; 
-
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import GoogleSignInButton from "../GoogleSignInButton";
 
 interface SignUpFormData {
   username: string;
@@ -27,11 +27,16 @@ const forSchema = z.object({
     .string()
     .min(6, { message: "Password must be at least 6 characters" })
     .max(20, { message: "Password must be at most 20 characters" }),
-})
+});
 
 export function AuthForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, reset ,formState:{errors}} = useForm<SignUpFormData>({resolver:zodResolver(forSchema)});
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<SignUpFormData>({ resolver: zodResolver(forSchema) });
   const router = useRouter();
 
   const onSubmit: SubmitHandler<SignUpFormData> = async ({
@@ -42,14 +47,13 @@ export function AuthForm() {
     setIsSubmitting(true);
 
     try {
-      const { data , error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { username } },
       });
       if (error) throw error;
 
-  
       toast.success(
         "Account created successfully! Check your email to verify."
       );
@@ -86,7 +90,9 @@ export function AuthForm() {
           aria-label="Username"
           {...register("username", { required: "Username is required" })}
         />
-        <span className="text-red-600 text-sm">{errors?.username?.message}</span>
+        <span className="text-red-600 text-sm">
+          {errors?.username?.message}
+        </span>
         <InputField
           type="email"
           placeholder="Email"
@@ -106,7 +112,9 @@ export function AuthForm() {
             },
           })}
         />
-        <span className="text-red-600 text-sm">{errors?.password?.message}</span>
+        <span className="text-red-600 text-sm">
+          {errors?.password?.message}
+        </span>
 
         <button
           type="submit"
@@ -122,15 +130,18 @@ export function AuthForm() {
         </button>
       </form>
 
-      <div className="text-center mt-4 text-sm text-gray-600">
-        Already have an account?{" "}
-        <button
-          type="button"
-          className="text-[#644FC1] underline font-medium cursor-pointer"
-          onClick={() => router.push("/signIn")}
-        >
-          Log In
-        </button>
+      <div className="flex flex-col gap-4 text-center mt-4 text-sm text-gray-600">
+        <div>
+          Already have an account?{" "}
+          <button
+            type="button"
+            className="text-[#644FC1] underline font-medium cursor-pointer"
+            onClick={() => router.push("/signIn")}
+          >
+            Log In
+          </button>
+        </div>
+        <GoogleSignInButton/>
       </div>
     </div>
   );

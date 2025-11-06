@@ -9,6 +9,7 @@ import InputField from "../components/InputField";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import GoogleSignInButton from "../components/GoogleSignInButton";
 
 interface SignInFormData {
   email: string;
@@ -109,8 +110,9 @@ export default function SignIn() {
         </button>
       </form>
 
-      <div className="text-center mt-4 text-sm text-gray-600">
-        Do not have an account?{" "}
+      <div className="flex flex-col gap-3 text-center mt-4 text-sm text-gray-600">
+       <div>
+         Do not have an account?{" "}
         <button
           type="button"
           className="text-[#644FC1] underline font-medium cursor-pointer"
@@ -118,6 +120,8 @@ export default function SignIn() {
         >
           SignUp
         </button>
+       </div>
+        <GoogleSignInButton/>
       </div>
     </div>
   );
