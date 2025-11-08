@@ -148,7 +148,7 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
         <div className="w-[100px] h-[100px] flex items-center justify-center bg-violet-900 rounded-2xl shadow-md mt-[-50px] left-10 mb-15 md:left-35 relative z-10">
           <EditProfile />
           <h2 className="text-xl font-medium top-27 absolute text-gray-900">
-            Wish Work
+            {infoList[0]?.brand}
           </h2>
         </div>
       </div>

@@ -60,7 +60,7 @@ export default function PublicProfileTeam({ user_id }: { user_id: string }) {
           team.map((m) => (
             <div
               key={m.id}
-              className="flex flex-col max-w-[250px] relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden"
+              className="flex flex-col w-[250px]  relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden"
             >
               <Image
                 src="/user.png"

@@ -10,6 +10,7 @@ import ProfileTopSection from "@/app/components/ProfileTopSection";
 import PublicProfileFAQ from "@/app/components/PublicProfileFAQ";
 import ProfileUpdateSection from "@/app/components/ProfileUpdateSection";
 import Image from "next/image";
+import ProfileGuideBar from "@/app/components/ProfileGuideBar";
 
 type Info = {
   id: string;
@@ -98,15 +99,29 @@ export default function ProfilePage() {
           </div>
         )}
         <h2 className="text-xl font-medium top-33 left-4.5 absolute text-gray-900 ">
-         {info.brand}
+          {info.brand}
         </h2>
       </div>
-      <PublicProfileLookcontributersTier user_id={user_id} />
-      <PublicProfileAbout user_id={user_id} />
-      <PublicProfileTeam user_id={user_id} />
-      <ProfileTopSection />
-      <PublicProfileFAQ user_id={user_id} />
-      <ProfileUpdateSection />
+
+      <ProfileGuideBar />
+      <div id="contribution">
+        <PublicProfileLookcontributersTier user_id={user_id} />
+      </div>
+      <div id="about">
+        <PublicProfileAbout user_id={user_id} />
+      </div>
+      <div id="team">
+        <PublicProfileTeam user_id={user_id} />
+      </div>
+      <div id="tops">
+        <ProfileTopSection />
+      </div>
+      <div id="faq">
+        <PublicProfileFAQ user_id={user_id} />
+      </div>
+      <div id="updates">
+        <ProfileUpdateSection />
+      </div>
     </div>
   );
 }
