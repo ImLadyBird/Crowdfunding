@@ -5,6 +5,8 @@ import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "react-toastify";
 import EditProfile from "./EditProfile";
+import { Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Info = {
   id: string;
@@ -30,6 +32,7 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
   );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const router = useRouter();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -112,6 +115,10 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
     }
   };
 
+  const handleSettingsClick = () => {
+  router.push(`/dashboard`);
+};
+
   return (
     <div className="bg-whiten">
       <div className="p-5 mx-auto">
@@ -150,6 +157,13 @@ export default function ProfileHeader({ infoList }: ProfileHeaderProps) {
           <h2 className="text-xl font-medium top-27 absolute text-gray-900">
             {infoList[0]?.brand}
           </h2>
+        </div>
+        <div className="flex items-center hover:bg-gray-700 text-white cursor-pointer justify-center bg-violet-800 rounded-[5px] shadow-md mt-[-100px] right-10 md:right-10 absolute z-10 px-3 py-2">
+          <button className="flex items-center gap-2 cursor-pointer"
+          onClick={handleSettingsClick}>
+            <Settings className="w-5 h-5" />
+            <span>Settings</span>
+          </button>
         </div>
       </div>
 

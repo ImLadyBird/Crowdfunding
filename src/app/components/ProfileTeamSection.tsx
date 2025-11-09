@@ -31,7 +31,11 @@ type Action =
   | { type: "OPEN_CREATE_MODAL" }
   | { type: "OPEN_EDIT_MODAL"; payload: TeamMember }
   | { type: "CLOSE_MODAL" }
-  | { type: "SET_FIELD"; field: "name" | "role" | "description"; payload: string }
+  | {
+      type: "SET_FIELD";
+      field: "name" | "role" | "description";
+      payload: string;
+    }
   | { type: "SET_SAVING"; payload: boolean }
   | { type: "SET_DELETING"; payload: boolean };
 
@@ -54,7 +58,14 @@ function reducer(state: State, action: Action): State {
     case "SET_LOADING":
       return { ...state, loading: action.payload };
     case "OPEN_CREATE_MODAL":
-      return { ...state, editingMember: null, name: "", role: "", description: "", isOpen: true };
+      return {
+        ...state,
+        editingMember: null,
+        name: "",
+        role: "",
+        description: "",
+        isOpen: true,
+      };
     case "OPEN_EDIT_MODAL":
       return {
         ...state,
@@ -179,7 +190,10 @@ export default function TeamManager() {
     dispatch({ type: "SET_DELETING", payload: true });
 
     try {
-      const { error } = await supabase.from("team").delete().eq("id", state.editingMember.id);
+      const { error } = await supabase
+        .from("team")
+        .delete()
+        .eq("id", state.editingMember.id);
       if (error) throw error;
 
       toast.success("Member deleted");
@@ -210,17 +224,31 @@ export default function TeamManager() {
               className="flex flex-col w-[250px] relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden"
             >
               <button
-                onClick={() => dispatch({ type: "OPEN_EDIT_MODAL", payload: m })}
+                onClick={() =>
+                  dispatch({ type: "OPEN_EDIT_MODAL", payload: m })
+                }
                 className="absolute top-2 right-2 cursor-pointer hover:bg-gray-200 p-1 rounded-md"
               >
                 <Image src="/edit.png" alt="edit" width={30} height={30} />
               </button>
 
-              <Image src="/user.png" alt="avatar" width={100} height={100} className="mt-4" />
-              <h1 className="text-2xl font-semibold mt-4 text-violet-800">{m.name}</h1>
+              <Image
+                src="/user.png"
+                alt="avatar"
+                width={100}
+                height={100}
+                className="mt-4"
+              />
+              <h1 className="text-2xl font-semibold mt-4 text-violet-800">
+                {m.name}
+              </h1>
               <div className="flex flex-col gap-3 justify-center items-center text-center">
-                <p className="text-gray-700 bg-gray-300 px-2 py-1 opacity-40 rounded-full">{m.role}</p>
-                <p className="text-gray-400 text-sm px-3 font-extralight">{m.description}</p>
+                <p className="text-gray-700 bg-gray-300 px-2 py-1 opacity-40 rounded-full">
+                  {m.role}
+                </p>
+                <p className="text-gray-400 text-sm px-3 font-extralight">
+                  {m.description}
+                </p>
               </div>
             </div>
           ))}
@@ -267,7 +295,11 @@ export default function TeamManager() {
                   className="w-full border px-3 py-2 rounded"
                   value={state.name}
                   onChange={(e) =>
-                    dispatch({ type: "SET_FIELD", field: "name", payload: e.target.value })
+                    dispatch({
+                      type: "SET_FIELD",
+                      field: "name",
+                      payload: e.target.value,
+                    })
                   }
                 />
               </label>
@@ -278,7 +310,11 @@ export default function TeamManager() {
                   className="w-full border px-3 py-2 rounded"
                   value={state.role}
                   onChange={(e) =>
-                    dispatch({ type: "SET_FIELD", field: "role", payload: e.target.value })
+                    dispatch({
+                      type: "SET_FIELD",
+                      field: "role",
+                      payload: e.target.value,
+                    })
                   }
                 />
               </label>

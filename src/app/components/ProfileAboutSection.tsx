@@ -114,7 +114,7 @@ export default function ProfileAboutSection() {
         </div>
 
         {/* About content area */}
-        <div className="rounded-lg bg-gray-100 p-9 md:min-w-[700px] mx-8">
+        <div className="rounded-lg bg-gray-100 p-9  mx-8">
           {loading ? (
             <p className="text-gray-500 text-sm">Loading…</p>
           ) : about ? (
