@@ -21,31 +21,31 @@ export default function Step2() {
 
   const socials = watch("socials") || [];
 
-useEffect(() => {
-  register("socials", {
-    required: "At least one social link is required",
-    validate: (links: SocialLink[] = []) => {
-      if (links.length === 0) return "At least one social link is required";
-      const invalid = links.some(
-        (link) =>
-          !link.platform ||
-          !link.url ||
-          !/^https?:\/\//i.test(link.url) ||
-          (() => {
-            try {
-              new URL(link.url);
-              return false;
-            } catch {
-              return true;
-            }
-          })()
-      );
-      return invalid
-        ? "All links must have a platform and a valid URL"
-        : true;
-    },
-  });
-}, [register]);
+  useEffect(() => {
+    register("socials", {
+      required: "At least one social link is required",
+      validate: (links: SocialLink[] = []) => {
+        if (links.length === 0) return "At least one social link is required";
+        const invalid = links.some(
+          (link) =>
+            !link.platform ||
+            !link.url ||
+            !/^https?:\/\//i.test(link.url) ||
+            (() => {
+              try {
+                new URL(link.url);
+                return false;
+              } catch {
+                return true;
+              }
+            })()
+        );
+        return invalid
+          ? "All links must have a platform and a valid URL"
+          : true;
+      },
+    });
+  }, [register]);
 
   async function submitForm() {
     const data = getValues();
@@ -57,6 +57,13 @@ useEffect(() => {
       alert("You must be logged in to submit.");
       return;
     }
+    const { data: lastInfo } = await supabase
+      .from("Info")
+      .select("profile_image_url, cover_image_url")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     const formData = {
       user_id: user.id,
@@ -67,6 +74,8 @@ useEffect(() => {
       tags: data.tags,
       details: data.details,
       socials: data.socials,
+      profile_image_url: lastInfo?.profile_image_url || null,
+      cover_image_url: lastInfo?.cover_image_url || null,
     };
 
     const { error } = await supabase.from("Info").insert([formData]);

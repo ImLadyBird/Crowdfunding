@@ -94,7 +94,7 @@ export default function ProfilePage() {
             className="object-cover rounded-full shadow-md"
           />
         ) : (
-          <div className="absolute shadow-md bg-white left-1 rounded-full text-center items-center flex justify-center border- rounded-full w-[120px] h-[120px]  p-1">
+          <div className="absolute shadow-md bg-white left-1 text-center items-center flex justify-center border- rounded-full w-[120px] h-[120px]  p-1">
             <Image src="/user.png" alt="user" width={80} height={80} />
           </div>
         )}

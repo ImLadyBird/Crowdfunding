@@ -5,6 +5,7 @@ import Image from "next/image";
 import React, { useEffect, useReducer } from "react";
 import { toast } from "react-toastify";
 
+
 type TeamMember = {
   id: string;
   name: string;
@@ -221,7 +222,7 @@ export default function TeamManager() {
           {state.members.map((m) => (
             <div
               key={m.id}
-              className="flex flex-col w-[250px] relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden"
+              className="flex flex-col min-w-[200px] relative gap-3 items-center justify-center px-3 py-5 border border-gray-400 rounded-[5px] shadow-sm overflow-hidden"
             >
               <button
                 onClick={() =>
@@ -254,7 +255,7 @@ export default function TeamManager() {
           ))}
 
           {/* Add new member card */}
-          <div className="border border-gray-400 flex w-[250px] items-center max-w-[250px] justify-center rounded-md">
+          <div className="border border-gray-400 flex  items-center min-w-[200px] max-w-[250px] justify-center rounded-md">
             <button
               onClick={() => dispatch({ type: "OPEN_CREATE_MODAL" })}
               className="flex flex-col items-center justify-center py-8 px-4 w-full h-40 cursor-pointer hover:bg-gray-50 transition"
