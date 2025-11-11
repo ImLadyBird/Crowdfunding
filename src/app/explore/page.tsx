@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
 import EditProfile from "../components/EditProfile";
+import { AppWindow } from "lucide-react";
 
 type Info = {
   id: string;
@@ -84,7 +85,6 @@ export default function ExplorePage() {
 
   const filteredInfos = infos
     .filter((info) => {
-      
       const matchesSearch =
         info.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
         info.details.toLowerCase().includes(searchTerm.toLowerCase());
@@ -209,11 +209,14 @@ export default function ExplorePage() {
         ) : filteredInfos.length === 0 ? (
           <p className="text-gray-500 text-center py-10">No projects found.</p>
         ) : (
-          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
             {filteredInfos.map((info) => (
               <Link
                 key={info.id}
-                href={`/profileCard/${info.user_id}`}
+                href={{
+                  pathname: `/profileCard/${info.user_id}`,
+                  query: { id: info.id },
+                }}
                 className="group rounded-2xl bg-white shadow-sm border border-gray-200 hover:shadow-lg transition overflow-hidden"
               >
                 <div className="h-40 bg-gray-200 relative mb-6">
@@ -231,26 +234,35 @@ export default function ExplorePage() {
                   )}
                   <div className="absolute bottom-[-40px] left-5 rounded-full w-[100px] h-[100px]  p-1">
                     {info.profile_image_url ? (
-                    <Image
-                      src={info.profile_image_url}
-                      alt='profile'
-                      fill
-                      className="object-cover rounded-full shadow-md " 
-                    />
-                  ) : (
-                    <div className="absolute bottom-[-1px] bg-white left-1 shadow-md  text-center items-center flex justify-center rounded-full w-[100px] h-[100px]  p-1">
-                      <Image src="/user.png" alt="user" width={70} height={70} />
-                    </div>
-                  )}
+                      <Image
+                        src={info.profile_image_url}
+                        alt="profile"
+                        fill
+                        className="object-cover rounded-full shadow-md "
+                      />
+                    ) : (
+                      <div className="absolute bottom-[-1px] bg-white left-1 shadow-md  text-center items-center flex justify-center rounded-full w-[100px] h-[100px]  p-1">
+                        <Image
+                          src="/user.png"
+                          alt="user"
+                          width={70}
+                          height={70}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="p-5 pt-8">
-                  <h2 className="text-xl font-semibold text-gray-900 group-hover:text-violet-700">
+                <div className="p-5 pt-8 ">
+                  <h2 className="text-xl  right-1.5 font-semibold text-gray-900 group-hover:text-violet-700">
                     {info.brand}
                   </h2>
                   <p className="text-sm text-gray-400 mt-1 line-clamp-3">
                     {info.details || "No description provided."}
                   </p>
+                  <div className="flex flex-row gap-2 mt-6 items-center">
+                    <AppWindow width={20} height={20} />
+                    <p className="font-light text-[14px]"> {info.category}</p>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -259,7 +271,10 @@ export default function ExplorePage() {
       </div>
 
       <div className="text-center pb-10">
-        <Link href="/WizardForm" className="text-violet-700 underline">
+        <Link
+          href="/WizardForm"
+          className="text-violet-800 border-2 border-violet-800 px-3 py-2 rounded-md bg-violet-200 hover:bg-violet-300 transition"
+        >
           Add new one
         </Link>
       </div>

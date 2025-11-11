@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import PublicProfileLookcontributersTier from "@/app/components/PublicProfileLookcontributersTier";
 import PublicProfileAbout from "@/app/components/PublicProfileAbout";
@@ -26,9 +26,15 @@ type Info = {
   user_id: string;
 };
 
-export default function ProfilePage() {
+type ProfilePageProps = {
+  id: string;
+};
+
+export default function ProfilePage({ id }: ProfilePageProps) {
   const params = useParams();
   const user_id = params?.user_id as string;
+  const searchParams = useSearchParams();
+  const project_id = searchParams.get("id");
 
   const [infos, setInfos] = useState<Info[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,10 +50,18 @@ export default function ProfilePage() {
       .select("*")
       .eq("user_id", user_id);
 
-    if (error) console.error("Error fetching user's projects:", error);
-    else {
-      setInfos(data || []);
+    if (error) {
+      console.error("Error fetching user's projects:", error);
+      setLoading(false);
+      return;
     }
+
+    if (!data || data.length === 0) {
+      console.warn("No projects found for this user.");
+      setLoading(false);
+      return;
+    }
+    setInfos(data);
     setLoading(false);
   }
 
@@ -61,7 +75,9 @@ export default function ProfilePage() {
   if (infos.length === 0)
     return <p className="p-8 text-gray-500">This user has no projects yet.</p>;
 
-  const info = infos[0];
+  const info = infos.find((item) => item.id === project_id);
+
+  console.log(project_id);
 
   return (
     <div className="min-h-screen bg-white pb-20 p-5 mx-auto">
@@ -69,15 +85,15 @@ export default function ProfilePage() {
         className="relative bg-linear-to-br height-[240px] from-slate-400 via-slate-500 to-slate-400 rounded-3xl"
         style={{
           height: "240px",
-          backgroundImage: info.cover_image_url
-            ? `url(${info.cover_image_url})`
+          backgroundImage: info?.cover_image_url
+            ? `url(${info?.cover_image_url})`
             : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         <h1 className="absolute top-20 left-3 md:top-22 md:left-12 text-white text-3xl md:text-5xl font-medium">
-          {info.brand}
+          {info?.brand}
         </h1>
         <div className="absolute bottom-4 right-6 md:bottom-6 md:right-8 text-white text-right">
           <div className="text-sm md:text-base opacity-90">
@@ -86,9 +102,9 @@ export default function ProfilePage() {
         </div>
       </div>
       <div className="w-[120px] h-[120px]  mt-[-60px] left-10 mb-15 md:left-35 relative z-10">
-        {info.profile_image_url ? (
+        {info?.profile_image_url ? (
           <Image
-            src={info.profile_image_url}
+            src={info?.profile_image_url}
             alt="Profile"
             fill
             className="object-cover rounded-full shadow-md"
@@ -99,7 +115,7 @@ export default function ProfilePage() {
           </div>
         )}
         <h2 className="text-xl font-medium top-33 left-4.5 absolute text-gray-900 ">
-          {info.brand}
+          {info?.brand}
         </h2>
       </div>
 

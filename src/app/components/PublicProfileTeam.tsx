@@ -32,7 +32,6 @@ export default function PublicProfileTeam({ user_id }: { user_id: string }) {
       console.error("Error fetching team:", error);
       setTeam([]);
     } else {
-      console.log("Fetched team:", teamData);
       setTeam(teamData || []);
     }
     setLoading(false);
