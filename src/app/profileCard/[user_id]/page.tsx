@@ -11,6 +11,7 @@ import PublicProfileFAQ from "@/app/components/PublicProfileFAQ";
 import ProfileUpdateSection from "@/app/components/ProfileUpdateSection";
 import Image from "next/image";
 import ProfileGuideBar from "@/app/components/ProfileGuideBar";
+import ProfileOtherProjectsSection from "@/app/components/ProfileOtherProjectsSection";
 
 type Info = {
   id: string;
@@ -137,6 +138,9 @@ export default function ProfilePage({ id }: ProfilePageProps) {
       </div>
       <div id="updates">
         <ProfileUpdateSection />
+      </div>
+      <div>
+        <ProfileOtherProjectsSection user_id={user_id}/>
       </div>
     </div>
   );
